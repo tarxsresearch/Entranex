@@ -23,6 +23,7 @@
             --success-green: #00e57a;
             --transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --bg-gradient: none;
+            --overlay-tint: rgba(10, 10, 15, 0.4);
         }
 
         /* PITCH DARK THEME VARIABLES */
@@ -34,6 +35,7 @@
             --text-primary: #ffffff;
             --text-secondary: rgba(255, 255, 255, 0.45);
             --bg-gradient: none;
+            --overlay-tint: rgba(0, 0, 0, 0.4);
         }
 
         /* LIGHT THEME VARIABLES */
@@ -47,6 +49,7 @@
             --accent-orange: #e67e22;
             --accent-cyan: #0097a7;
             --bg-gradient: none;
+            --overlay-tint: rgba(255, 255, 255, 0.6);
         }
 
         /* GREY THEME VARIABLES */
@@ -60,6 +63,7 @@
             --accent-orange: #e67e22;
             --accent-cyan: #0097a7;
             --bg-gradient: none;
+            --overlay-tint: rgba(255, 255, 255, 0.3);
         }
 
         * {
@@ -86,7 +90,7 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            background: rgba(10, 10, 15, 0.4);
+            background: var(--overlay-tint);
             display: flex;
             flex-direction: column;
             position: relative;
@@ -610,22 +614,6 @@
             position: relative;
         }
         .sketch-bio-text { font-size: 0.9rem; color: var(--text-primary); line-height: 1.4; }
-        .sketch-details-arrow {
-            position: absolute;
-            right: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: var(--bg-base);
-            padding: 2px 6px;
-            border-radius: 10px;
-            border: 1px solid var(--glass-border);
-        }
-
         .sketch-action-row {
             display: flex;
             gap: 10px;
@@ -1548,7 +1536,7 @@
             </div>
 
             <div class="chat-title-row">
-                <h2 class="chat-main-title">Message</h2>
+                <div></div>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <button class="sketch-btn active-filter" style="border-color: var(--accent-cyan); padding: 5px 12px; font-size: 0.85rem;" onclick="startAlienChat()">
                         <i class="fas fa-user-astronaut"></i> Alien Chat
@@ -1597,7 +1585,6 @@
         </div>
 
         <main id="notif-screen" class="screen hidden">
-            <div class="screen-title">Notifications</div>
             <div id="dynamic-notification-list"></div>
         </main>
 
@@ -1635,9 +1622,6 @@
 
                 <div class="sketch-bio-section">
                     <p class="sketch-bio-text" id="sketch-display-bio">This is Bio at this section</p>
-                    <div class="sketch-details-arrow" onclick="alert('Viewing comprehensive bio details.')">
-                        <span>Details</span><i class="fas fa-arrow-right"></i>
-                    </div>
                 </div>
 
                 <div class="sketch-action-row">
@@ -1671,7 +1655,6 @@
         </div>
 
         <main id="search-screen" class="screen hidden">
-            <div class="screen-title">Discover Network</div>
             <div class="search-input-wrapper">
                 <i class="fas fa-search"></i>
                 <input type="text" id="friend-search" class="integrated-search" placeholder="Search users and posts..."
@@ -3873,9 +3856,7 @@
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-plug-circle-xmark"></i>
-                            <h3>Couldn't reach the feed</h3>
-                            <p>The posts service may still be waking up, or POSTS_BASE isn't deployed yet.
-                            <span style="color:var(--accent-cyan); cursor:pointer;" onclick="loadFeedFromServer()">Try again</span></p>
+                            <h3>Error 404</h3>
                         </div>`;
                 }
             }
