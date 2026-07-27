@@ -19,6 +19,7 @@
             --text-secondary: rgba(255, 255, 255, 0.6);
             --accent-orange: #ff8c00;
             --accent-cyan: #00e5ff;
+            --accent-violet: #8b6bff;
             --danger-red: #ff4444;
             --success-green: #00e57a;
             --transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -48,6 +49,7 @@
             --text-secondary: rgba(0, 0, 0, 0.55);
             --accent-orange: #e67e22;
             --accent-cyan: #0097a7;
+            --accent-violet: #6c4fd6;
             --bg-gradient: none;
             --overlay-tint: rgba(255, 255, 255, 0.6);
         }
@@ -62,6 +64,7 @@
             --text-secondary: rgba(0, 0, 0, 0.58);
             --accent-orange: #e67e22;
             --accent-cyan: #0097a7;
+            --accent-violet: #6c4fd6;
             --bg-gradient: none;
             --overlay-tint: rgba(255, 255, 255, 0.3);
         }
@@ -726,7 +729,8 @@
         .feed-avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--glass-highlight); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: var(--text-secondary); border: 1px solid var(--glass-border); overflow: hidden; }
         .feed-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .post-right { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-        .post-img-box { width: 100%; height: clamp(200px, 35vh, 300px); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 15px; display: flex; justify-content: center; align-items: center; color: var(--text-secondary); font-style: italic; background-size: cover; background-position: center; position: relative; overflow: hidden; margin-top: 5px; }
+        .post-img-box { width: 100%; border-radius: 15px; overflow: hidden; position: relative; margin-top: 5px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; justify-content: center; align-items: center; }
+        .post-img-box img { width: 100%; height: auto; max-height: 70vh; object-fit: contain; display: block; }
         .post-name { font-weight: 500; color: var(--accent-cyan); display: flex; align-items: center; gap: 5px; margin-top: 5px; }
         .post-text { font-size: 0.95rem; line-height: 1.4; color: var(--text-primary); margin-bottom: 5px; }
         
@@ -807,10 +811,14 @@
         /* Photo / Text toggle inside the compose modal */
         .post-type-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
         .post-type-toggle-btn { flex: 1; padding: 10px; border-radius: 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.9rem; cursor: pointer; transition: var(--transition-standard); display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .post-type-toggle-btn.active { color: var(--text-primary); border-color: var(--accent-orange); background: rgba(255, 140, 0, 0.12); }
+        .post-type-toggle-btn.active { color: var(--text-primary); border-color: var(--accent-cyan); background: rgba(0, 229, 255, 0.1); }
+        .crop-ratio-btn { flex: none !important; padding: 8px 14px !important; font-size: 0.8rem !important; }
+        .post-delete-btn { color: var(--text-secondary); cursor: pointer; padding: 4px 6px; font-size: 0.9rem; flex-shrink: 0; }
+        .post-delete-btn:hover { color: var(--danger-red); }
         .post-attach-row { margin-bottom: 15px; }
-        .attach-photo-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px; border: 1px dashed var(--glass-border); color: var(--text-secondary); font-size: 0.88rem; cursor: pointer; transition: var(--transition-standard); }
-        .attach-photo-btn:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); }
+        .attach-photo-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px; border: 1px dashed rgba(0, 229, 255, 0.35); color: var(--accent-cyan); font-size: 0.88rem; cursor: pointer; transition: var(--transition-standard); }
+        .attach-photo-btn:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); background: rgba(0, 229, 255, 0.06); }
+        #post-text:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.12); }
 
         /* Comments modal */
         .comment-item { padding: 10px 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; }
@@ -984,6 +992,15 @@
         .btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; border: none; }
         .btn-cancel { background: transparent; border: 1px solid var(--text-secondary); color: var(--text-secondary); }
         .btn-save { background: var(--accent-orange); color: #000; box-shadow: 0 0 15px rgba(255, 140, 0, 0.4); }
+        /* Post composer + cropper get their own signature look: a cyan-to-violet
+           gradient instead of the app's default orange, scoped so nothing else
+           (chat send, profile save, etc.) is affected. */
+        #post-modal .btn-save, #crop-modal .btn-save {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            color: #fff;
+            box-shadow: 0 4px 18px rgba(139, 107, 255, 0.35);
+        }
+        #post-modal .btn-save:active, #crop-modal .btn-save:active { transform: scale(0.98); }
 
         .chat-window { position: fixed; inset: 0; background: var(--bg-base); z-index: 200; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.35s ease; }
         .chat-window.open { transform: translateX(0); }
@@ -1967,7 +1984,8 @@
                     <input type="file" id="modal-photo-input" accept="image/*" style="display:none;" onchange="handlePostMedia(this)">
                 </div>
                 <div id="post-preview-box"
-                    style="display:none; width:100%; height:220px; border-radius:12px; background-size:cover; background-position:center; margin-bottom:15px; border:1px solid var(--glass-border);">
+                    style="display:none; width:100%; height:220px; border-radius:12px; background-size:cover; background-position:center; margin-bottom:15px; border:1px solid var(--glass-border); position:relative;">
+                    <button type="button" onclick="openCropper()" style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.65); color:#fff; border:none; border-radius:8px; padding:6px 12px; font-size:0.8rem; display:flex; align-items:center; gap:5px;"><i class="fas fa-crop-alt"></i> Crop</button>
                 </div>
             </div>
             <div class="post-drawer-footer">
@@ -1976,6 +1994,44 @@
                     <button class="btn btn-save" onclick="publishPost()">Publish</button>
                 </div>
             </div>
+        </div>
+
+        <!-- Photo cropper: pick an aspect ratio, then drag/pinch to frame the shot -->
+        <div class="post-drawer-overlay" id="crop-modal" style="z-index:1100;">
+            <div class="post-drawer-header">
+                <div class="post-drawer-close" onclick="closeCropper(false)"><i class="fas fa-times"></i></div>
+                <h3>Crop Photo</h3>
+                <div style="width: 32px;"></div>
+            </div>
+            <div class="post-drawer-body" style="display:flex; flex-direction:column; align-items:center;">
+                <div id="crop-ratio-row" style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; justify-content:center;">
+                    <button type="button" class="post-type-toggle-btn crop-ratio-btn active" data-ratio="orig" onclick="setCropRatio('orig')">Original</button>
+                    <button type="button" class="post-type-toggle-btn crop-ratio-btn" data-ratio="1:1" onclick="setCropRatio('1:1')">Square</button>
+                    <button type="button" class="post-type-toggle-btn crop-ratio-btn" data-ratio="4:5" onclick="setCropRatio('4:5')">Portrait</button>
+                    <button type="button" class="post-type-toggle-btn crop-ratio-btn" data-ratio="16:9" onclick="setCropRatio('16:9')">Landscape</button>
+                </div>
+                <div id="crop-viewport" style="width:100%; max-width:340px; aspect-ratio:1/1; overflow:hidden; border-radius:12px; border:1px solid rgba(139, 107, 255, 0.4); box-shadow: 0 0 0 1px rgba(0,229,255,0.15), 0 8px 24px rgba(0,0,0,0.4); position:relative; background:#000; touch-action:none;">
+                    <img id="crop-image" src="" style="position:absolute; left:0; top:0; transform-origin:0 0; user-select:none; -webkit-user-drag:none; will-change:transform;">
+                </div>
+                <div style="width:100%; max-width:340px; margin-top:14px; display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-search-minus" style="opacity:0.6;"></i>
+                    <input type="range" id="crop-zoom" min="100" max="300" value="100" style="flex:1;" oninput="onCropZoom(this.value)">
+                    <i class="fas fa-search-plus" style="opacity:0.6;"></i>
+                </div>
+                <p style="font-size:0.75rem; opacity:0.6; margin-top:10px; text-align:center;">Drag to reposition &middot; pinch or use the slider to zoom</p>
+            </div>
+            <div class="post-drawer-footer">
+                <div class="btn-flex">
+                    <button class="btn btn-cancel" onclick="closeCropper(false)">Cancel</button>
+                    <button class="btn btn-save" onclick="closeCropper(true)">Use Photo</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fullscreen tap-to-view image lightbox -->
+        <div id="lightbox-overlay" onclick="closeLightbox()" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:1200; align-items:center; justify-content:center;">
+            <img id="lightbox-img" src="" style="max-width:100%; max-height:100%; object-fit:contain;">
+            <div onclick="closeLightbox()" style="position:absolute; top:20px; right:20px; color:#fff; font-size:1.6rem; width:40px; height:40px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.15); border-radius:50%;"><i class="fas fa-times"></i></div>
         </div>
 
         <div class="modal-overlay" id="comments-modal">
@@ -3737,7 +3793,7 @@
 
         function handlePostMedia(input) {
             if (input.files && input.files[0]) {
-                tempPostFile = input.files[0];  // uploaded to Cloudinary in publishPost()
+                tempPostFile = input.files[0];  // may get replaced by a cropped version below
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     tempPostImg = e.target.result;  // preview only, never sent to the server
@@ -3747,8 +3803,189 @@
                     preview.style.backgroundImage = `url('${tempPostImg}')`;
                     preview.style.display = 'block';
                     document.getElementById('post-modal').classList.add('active');
+                    openCropper();  // let the user frame the shot right away
                 };
                 reader.readAsDataURL(tempPostFile);
+            }
+        }
+
+        // ─── PHOTO CROPPER ──────────────────────────────────────────────────
+        // Vanilla drag/pinch/zoom cropper -- no external library. Renders the
+        // visible crop area onto a canvas and turns it into a File that
+        // replaces tempPostFile, so publishPost()/Cloudinary upload need no
+        // changes at all.
+        let cropState = null; // { natW, natH, scale, minScale, x, y, ratio }
+
+        function cropRatioValue(ratio) {
+            if (ratio === '1:1') return 1;
+            if (ratio === '4:5') return 4 / 5;
+            if (ratio === '16:9') return 16 / 9;
+            return null; // 'orig' -- use the photo's own ratio
+        }
+
+        function openCropper() {
+            if (!tempPostImg) return;
+            const img = document.getElementById('crop-image');
+            const viewport = document.getElementById('crop-viewport');
+            img.src = tempPostImg;
+            img.onload = () => {
+                cropState = {
+                    natW: img.naturalWidth,
+                    natH: img.naturalHeight,
+                    scale: 1, minScale: 1, x: 0, y: 0,
+                    ratio: document.querySelector('.crop-ratio-btn.active')?.dataset.ratio || 'orig',
+                };
+                document.getElementById('crop-zoom').value = 100;
+                applyCropRatio();
+                document.getElementById('crop-modal').classList.add('active');
+            };
+        }
+
+        function setCropRatio(ratio) {
+            document.querySelectorAll('.crop-ratio-btn').forEach(b => b.classList.toggle('active', b.dataset.ratio === ratio));
+            if (cropState) { cropState.ratio = ratio; applyCropRatio(); }
+        }
+
+        function applyCropRatio() {
+            const viewport = document.getElementById('crop-viewport');
+            const r = cropRatioValue(cropState.ratio) || (cropState.natW / cropState.natH);
+            // Viewport width is fixed by its CSS (100%, capped at 340px) -- derive height from the ratio.
+            const vw = viewport.clientWidth || 340;
+            viewport.style.aspectRatio = `${r} / 1`;
+            requestAnimationFrame(() => {
+                const vh = viewport.clientHeight;
+                // minScale = smallest zoom where the image still fully covers the viewport
+                cropState.minScale = Math.max(vw / cropState.natW, vh / cropState.natH);
+                cropState.scale = cropState.minScale;
+                cropState.x = (vw - cropState.natW * cropState.scale) / 2;
+                cropState.y = (vh - cropState.natH * cropState.scale) / 2;
+                document.getElementById('crop-zoom').value = 100;
+                renderCropTransform();
+            });
+        }
+
+        function renderCropTransform() {
+            const img = document.getElementById('crop-image');
+            img.style.width = cropState.natW + 'px';
+            img.style.height = cropState.natH + 'px';
+            img.style.transform = `translate(${cropState.x}px, ${cropState.y}px) scale(${cropState.scale})`;
+        }
+
+        function clampCropPosition() {
+            const viewport = document.getElementById('crop-viewport');
+            const vw = viewport.clientWidth, vh = viewport.clientHeight;
+            const w = cropState.natW * cropState.scale, h = cropState.natH * cropState.scale;
+            cropState.x = Math.min(0, Math.max(vw - w, cropState.x));
+            cropState.y = Math.min(0, Math.max(vh - h, cropState.y));
+        }
+
+        function onCropZoom(sliderVal) {
+            if (!cropState) return;
+            const viewport = document.getElementById('crop-viewport');
+            const vw = viewport.clientWidth / 2, vh = viewport.clientHeight / 2;
+            const oldScale = cropState.scale;
+            const newScale = cropState.minScale * (sliderVal / 100);
+            // zoom around the viewport's center so it doesn't jump
+            const cx = (vw - cropState.x) / oldScale, cy = (vh - cropState.y) / oldScale;
+            cropState.scale = newScale;
+            cropState.x = vw - cx * newScale;
+            cropState.y = vh - cy * newScale;
+            clampCropPosition();
+            renderCropTransform();
+        }
+
+        (function setupCropDragAndPinch() {
+            const viewport = document.getElementById('crop-viewport');
+            if (!viewport) return;
+            let dragging = false, lastX = 0, lastY = 0;
+            let pinchStartDist = 0, pinchStartScale = 1;
+
+            function dist(t0, t1) { return Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY); }
+
+            viewport.addEventListener('pointerdown', (e) => {
+                if (!cropState) return;
+                dragging = true; lastX = e.clientX; lastY = e.clientY;
+                viewport.setPointerCapture(e.pointerId);
+            });
+            viewport.addEventListener('pointermove', (e) => {
+                if (!dragging || !cropState) return;
+                cropState.x += e.clientX - lastX;
+                cropState.y += e.clientY - lastY;
+                lastX = e.clientX; lastY = e.clientY;
+                clampCropPosition();
+                renderCropTransform();
+            });
+            ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev =>
+                viewport.addEventListener(ev, () => { dragging = false; }));
+
+            // Pinch-to-zoom (touch only -- pointer events don't give us two-finger deltas)
+            viewport.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2 && cropState) {
+                    pinchStartDist = dist(e.touches[0], e.touches[1]);
+                    pinchStartScale = cropState.scale;
+                }
+            }, { passive: true });
+            viewport.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2 && cropState && pinchStartDist > 0) {
+                    e.preventDefault();
+                    const factor = dist(e.touches[0], e.touches[1]) / pinchStartDist;
+                    const pct = Math.min(300, Math.max(100, (pinchStartScale * factor / cropState.minScale) * 100));
+                    document.getElementById('crop-zoom').value = pct;
+                    onCropZoom(pct);
+                }
+            }, { passive: false });
+        })();
+
+        function closeCropper(apply) {
+            document.getElementById('crop-modal').classList.remove('active');
+            if (!apply || !cropState) return;
+
+            const viewport = document.getElementById('crop-viewport');
+            const vw = viewport.clientWidth, vh = viewport.clientHeight;
+            // Map the visible viewport rect back into the source image's natural pixel space.
+            const sx = -cropState.x / cropState.scale;
+            const sy = -cropState.y / cropState.scale;
+            const sw = vw / cropState.scale;
+            const sh = vh / cropState.scale;
+
+            const canvas = document.createElement('canvas');
+            const outW = Math.round(Math.min(sw, 1600));
+            canvas.width = outW;
+            canvas.height = Math.round(outW * (sh / sw));
+            const ctx = canvas.getContext('2d');
+            const img = document.getElementById('crop-image');
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob((blob) => {
+                if (!blob) return;
+                tempPostFile = new File([blob], 'post.jpg', { type: 'image/jpeg' });
+                const url = URL.createObjectURL(blob);
+                tempPostImg = url;
+                const preview = document.getElementById('post-preview-box');
+                preview.style.backgroundImage = `url('${url}')`;
+            }, 'image/jpeg', 0.9);
+        }
+
+        // ─── LIGHTBOX (tap a posted photo to view it full-screen) ────────────
+        function openLightbox(url) {
+            document.getElementById('lightbox-img').src = url;
+            document.getElementById('lightbox-overlay').style.display = 'flex';
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox-overlay').style.display = 'none';
+        }
+
+        // ─── DELETE POST (own posts only -- button is hidden otherwise) ──────
+        async function confirmDeletePost(postId) {
+            if (!confirm("Delete this post? This can't be undone.")) return;
+            try {
+                await postsDelete(`/posts/${postId}`);
+                feedPosts = feedPosts.filter(p => p.id !== postId);
+                myPosts = myPosts.filter(p => p.id !== postId);
+                renderFeed();
+                if (typeof renderProfileGalleryGrid === 'function') renderProfileGalleryGrid();
+            } catch (e) {
+                alert("Couldn't delete post: " + (e.message || "the posts service may be unreachable."));
             }
         }
 
@@ -3772,6 +4009,7 @@
             return {
                 id: sp.id,
                 name: sp.author.username,
+                username: sp.author.username,  // used for the "is this my post?" check (delete button)
                 avatar: null,
                 text: sp.caption || '',
                 image: sp.post_type === 'photo' ? sp.image_url : null,
@@ -4027,19 +4265,23 @@
 
             feedPosts.forEach(post => {
                 const avatarHTML = post.avatar ? `<img src="${post.avatar}">` : `<i class="fas fa-user"></i>`;
-                const imgHTML = post.image ? `<div class="post-img-box" style="background-image:url('${post.image}');"></div>` : '';
+                const imgHTML = post.image ? `<div class="post-img-box" onclick="openLightbox('${post.image}')" style="cursor:zoom-in;"><img src="${post.image}" alt="Post photo" loading="lazy"></div>` : '';
                 const textHTML = post.text ? `<div class="post-text">${escapeHtml(post.text)}</div>` : '';
-                const borderAccent = post.isTextOnly ? 'border-left: 3px solid var(--accent-orange); padding-left:10px;' : '';
+                const borderAccent = post.isTextOnly ? 'border-left: 3px solid var(--accent-violet); padding-left:10px;' : '';
                 const likedClass = post.likedByMe ? 'liked' : '';
                 const heartIcon = post.likedByMe ? 'fas' : 'far';
+                const isMine = post.username === currentUserHandle;
+                const deleteHTML = isMine ? `<i class="fas fa-trash post-delete-btn" onclick="confirmDeletePost(${post.id})" title="Delete post"></i>` : '';
 
                 container.innerHTML += `
                 <article class="post" style="margin-bottom: 25px; ${borderAccent}">
                     <div class="post-left"><div class="feed-avatar">${avatarHTML}</div></div>
                     <div class="post-right">
-                        <div class="post-name">
-                            ${escapeHtml(post.name)} 
-                            ${post.isTextOnly ? '<span style="font-size:0.7rem; color:var(--accent-orange); font-weight:normal; margin-left:5px;">[Text Shared]</span>' : ''}
+                        <div class="post-name" style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <span>${escapeHtml(post.name)}
+                            ${post.isTextOnly ? '<span style="font-size:0.7rem; color:var(--accent-violet); font-weight:normal; margin-left:5px;">[Text Shared]</span>' : ''}</span>
+
+                            ${deleteHTML}
                         </div>
                         ${textHTML}
                         ${imgHTML}
@@ -4110,7 +4352,8 @@
             contentToRender.forEach(post => {
                 if (post.isTextOnly) {
                     container.innerHTML += `
-                        <div class="sketch-gallery-item">
+                        <div class="sketch-gallery-item" style="position:relative;">
+                            <i class="fas fa-trash post-delete-btn" onclick="confirmDeletePost(${post.id})" title="Delete post" style="position:absolute; top:6px; right:6px; z-index:2; background:rgba(0,0,0,0.5); color:#fff; border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center;"></i>
                             <div class="sketch-gallery-text-card">
                                 <p class="gallery-text-snippet">${escapeHtml(post.text)}</p>
                                 <div class="gallery-text-footer">
@@ -4120,7 +4363,8 @@
                         </div>`;
                 } else if (post.image) {
                     container.innerHTML += `
-                        <div class="sketch-gallery-item">
+                        <div class="sketch-gallery-item" style="position:relative;">
+                            <i class="fas fa-trash post-delete-btn" onclick="confirmDeletePost(${post.id})" title="Delete post" style="position:absolute; top:6px; right:6px; z-index:2; background:rgba(0,0,0,0.5); color:#fff; border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center;"></i>
                             <img src="${post.image}" alt="Entranex Post Visual Grid Asset">
                         </div>`;
                 }
