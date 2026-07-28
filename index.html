@@ -382,7 +382,7 @@
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            position: fixed;
+            position: absolute;
             left: 15px;
             right: 15px;
             bottom: 15px;
@@ -414,7 +414,7 @@
 
         /* Always-visible strip at the bottom edge that catches the swipe-up gesture (and taps, as a fallback). */
         .nav-swipe-zone {
-            position: fixed;
+            position: absolute;
             left: 0;
             right: 0;
             bottom: 0;
@@ -443,7 +443,7 @@
 
         /* Dimmed backdrop shown behind the open drawer; tapping it closes the drawer. */
         .nav-drawer-scrim {
-            position: fixed;
+            position: absolute;
             inset: 0;
             background: rgba(0, 0, 0, 0.4);
             opacity: 0;
@@ -512,6 +512,153 @@
         .screen::-webkit-scrollbar { display: none; }
         .hidden { display: none !important; }
         .screen-title { font-size: 1.2rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 10px; }
+
+        /* ==========================================================================
+           REELS VIEWER — full-screen slide-through view opened by swiping left
+           on the feed. Slides between posts (no vertical scroll inside a slide).
+           ========================================================================== */
+        .reels-overlay {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            z-index: 260;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reels-overlay.open { transform: translateX(0); }
+
+        .reels-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            color: #fff;
+            z-index: 2;
+            position: relative;
+        }
+        .reels-back { font-size: 1.3rem; cursor: pointer; width: 32px; }
+        .reels-title { font-weight: 600; letter-spacing: 0.5px; }
+
+        .reels-track {
+            flex: 1;
+            display: flex;
+            height: 100%;
+            transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+            touch-action: pan-y;
+        }
+
+        .reels-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        .reels-slide img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .reels-slide.text-slide {
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(160deg, #0a0a14, #14142a);
+            padding: 30px;
+        }
+        .reels-slide.text-slide .reels-caption-big {
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-align: center;
+            color: #fff;
+            line-height: 1.4;
+        }
+
+        .reels-slide-scrim {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 40%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .reels-slide-info {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            padding: 0 18px 26px 18px;
+            color: #fff;
+        }
+        .reels-slide-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .reels-slide-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--glass-highlight);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; overflow: hidden; flex-shrink: 0;
+        }
+        .reels-slide-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .reels-slide-caption { font-size: 0.85rem; opacity: 0.92; line-height: 1.4; }
+        .reels-slide-stats { display: flex; gap: 18px; margin-top: 12px; font-size: 0.8rem; opacity: 0.9; }
+        .reels-slide-stats span { display: flex; align-items: center; gap: 5px; }
+
+        .reels-dots {
+            position: absolute;
+            top: 56px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            gap: 4px;
+            z-index: 2;
+        }
+        .reels-dots .dot {
+            flex: 1;
+            height: 3px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.3);
+            overflow: hidden;
+        }
+        .reels-dots .dot.active { background: #fff; }
+
+        .reels-empty {
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            width: 100%;
+            padding: 0 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .reels-empty i { font-size: 2.2rem; }
+
+        /* Nudge shown briefly on the feed to teach the swipe-left gesture */
+        .reels-swipe-hint {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            opacity: 0.5;
+            pointer-events: none;
+            animation: reels-hint-pulse 2.4s ease-in-out infinite;
+        }
+        @keyframes reels-hint-pulse {
+            0%, 100% { opacity: 0.25; transform: translateY(-50%) translateX(0); }
+            50%      { opacity: 0.6; transform: translateY(-50%) translateX(-4px); }
+        }
 
         /* Updated Make empty states open and seamless */
         .empty-state {
@@ -1006,7 +1153,7 @@
             justify-content: center;
         }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 150; display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 150; display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content, .action-sheet-content { width: 100%; background: var(--bg-base); border-radius: 25px 25px 0 0; padding: 25px; border-top: 1px solid var(--glass-border); transform: translateY(100%); transition: transform 0.3s; max-height: 85vh; overflow-y: auto; color: var(--text-primary); }
         .modal-overlay.active .modal-content, .modal-overlay.active .action-sheet-content { transform: translateY(0); }
@@ -1016,7 +1163,7 @@
 
         /* Full-screen slide-up compose drawer for creating a post */
         .post-drawer-overlay {
-            position: fixed; inset: 0;
+            position: absolute; inset: 0;
             background: var(--bg-base); z-index: 250;
             display: flex; flex-direction: column;
             transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
@@ -1064,7 +1211,7 @@
         }
         #post-modal .btn-save:active, #crop-modal .btn-save:active { transform: scale(0.98); }
 
-        .chat-window { position: fixed; inset: 0; background: var(--bg-base); z-index: 200; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.35s ease; }
+        .chat-window { position: absolute; inset: 0; background: var(--bg-base); z-index: 200; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.35s ease; }
         .chat-window.open { transform: translateX(0); }
         .chat-win-header { display: flex; align-items: center; gap: 12px; padding: 15px; background: var(--glass-bg); border-bottom: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
         .chat-win-back { font-size: 1.2rem; color: var(--accent-cyan); cursor: pointer; }
@@ -1116,7 +1263,7 @@
            ENTRANEX LOGIN (AUTH GATE)
            ========================================================================== */
         #auth-screen {
-            position: fixed;
+            position: absolute;
             inset: 0;
             z-index: 500;
             background-color: var(--bg-base);
@@ -1278,7 +1425,7 @@
 
         /* ── Intro / splash screen ── */
         #intro-screen {
-            position: fixed;
+            position: absolute;
             inset: 0;
             z-index: 900;
             background-color: #060912;
@@ -1319,7 +1466,7 @@
         #auth-screen .idle-game-prompt i { margin-right: 5px; }
 
         .game-overlay {
-            position: fixed;
+            position: absolute;
             inset: 0;
             z-index: 600;
             background: rgba(5, 5, 8, 0.88);
@@ -1406,7 +1553,7 @@
            REMOTE POPUP NOTIFICATION (controlled by Front 2 / admin.html)
            ========================================================================== */
         .ennex-popup-overlay {
-            position: fixed;
+            position: absolute;
             inset: 0;
             background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(4px);
@@ -1605,6 +1752,18 @@
         <main id="feed-screen" class="screen">
             <div id="dynamic-feed"></div>
         </main>
+
+        <!-- Reels-style viewer: swipe left on the feed to open. Slides (not scrolls)
+             horizontally between posts using the same feedPosts data. -->
+        <div class="reels-overlay" id="reels-overlay">
+            <div class="reels-header">
+                <i class="fas fa-chevron-left reels-back" onclick="closeReels()"></i>
+                <span class="reels-title">Reels</span>
+                <span style="width:32px;"></span>
+            </div>
+            <div class="reels-track" id="reels-track"></div>
+            <div class="reels-dots" id="reels-dots"></div>
+        </div>
 
         <!-- Feed filter: small edge tab, swipe right (or tap) to open the filter drawer -->
         <div class="feed-filter-edge-tab show" id="feed-filter-edge-tab" title="Swipe right for filters">
@@ -4269,6 +4428,156 @@
                 toggleFeedFilterDrawer();
             });
         }
+
+        // ─── REELS VIEWER ───────────────────────────────────────────────────
+        // Swiping left anywhere on the feed screen opens a full-screen,
+        // slide-through viewer built from the same feedPosts data. It slides
+        // between posts (transform-based) rather than scrolling.
+        const reelsOverlay = document.getElementById('reels-overlay');
+        const reelsTrack = document.getElementById('reels-track');
+        const reelsDots = document.getElementById('reels-dots');
+        let reelsIndex = 0;
+        let reelsSlideCount = 0;
+
+        function buildReelsSlides() {
+            const usable = feedPosts.filter(p => p.image || p.isTextOnly);
+            reelsSlideCount = usable.length;
+
+            if (usable.length === 0) {
+                reelsTrack.innerHTML = `
+                    <div class="reels-slide">
+                        <div class="reels-empty">
+                            <i class="fas fa-photo-film"></i>
+                            <div>No posts to slide through yet</div>
+                        </div>
+                    </div>`;
+                reelsDots.innerHTML = '';
+                return;
+            }
+
+            reelsTrack.innerHTML = usable.map(post => {
+                const avatarHTML = post.avatar ? `<img src="${post.avatar}">` : `<i class="fas fa-user"></i>`;
+                if (post.isTextOnly) {
+                    return `
+                        <div class="reels-slide text-slide">
+                            <div class="reels-caption-big">${escapeHtml(post.text)}</div>
+                            <div class="reels-slide-info" style="position:absolute; bottom:0;">
+                                <div class="reels-slide-user">
+                                    <div class="reels-slide-avatar">${avatarHTML}</div>
+                                    <span>${escapeHtml(post.name)}</span>
+                                </div>
+                                <div class="reels-slide-stats">
+                                    <span><i class="${post.likedByMe ? 'fas' : 'far'} fa-heart"></i> ${post.likeCount ?? 0}</span>
+                                    <span><i class="far fa-comment"></i> ${post.commentCount ?? 0}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+                return `
+                    <div class="reels-slide">
+                        <img src="${post.image}" alt="Post photo" loading="lazy">
+                        <div class="reels-slide-scrim"></div>
+                        <div class="reels-slide-info">
+                            <div class="reels-slide-user">
+                                <div class="reels-slide-avatar">${avatarHTML}</div>
+                                <span>${escapeHtml(post.name)}</span>
+                            </div>
+                            ${post.text ? `<div class="reels-slide-caption">${escapeHtml(post.text)}</div>` : ''}
+                            <div class="reels-slide-stats">
+                                <span><i class="${post.likedByMe ? 'fas' : 'far'} fa-heart"></i> ${post.likeCount ?? 0}</span>
+                                <span><i class="far fa-comment"></i> ${post.commentCount ?? 0}</span>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            reelsDots.innerHTML = usable.map((_, i) => `<div class="dot${i === 0 ? ' active' : ''}"></div>`).join('');
+        }
+
+        function goToReelsSlide(index) {
+            if (reelsSlideCount === 0) return;
+            reelsIndex = Math.max(0, Math.min(index, reelsSlideCount - 1));
+            reelsTrack.style.transform = `translateX(-${reelsIndex * 100}%)`;
+            reelsDots.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === reelsIndex));
+        }
+
+        function openReels() {
+            buildReelsSlides();
+            reelsIndex = 0;
+            reelsTrack.style.transform = 'translateX(0)';
+            reelsOverlay.classList.add('open');
+        }
+
+        function closeReels() {
+            reelsOverlay.classList.remove('open');
+        }
+
+        // Swipe-left-to-open on the feed screen itself
+        (function setupFeedSwipeToReels() {
+            const feedScreen = document.getElementById('feed-screen');
+            if (!feedScreen) return;
+            let startX = null, startY = null;
+            feedScreen.addEventListener('touchstart', function (e) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+            feedScreen.addEventListener('touchend', function (e) {
+                if (startX === null) return;
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                const deltaX = endX - startX;
+                const deltaY = Math.abs(endY - startY);
+                // Right-to-left swipe: deltaX is meaningfully negative, mostly horizontal
+                if (deltaX < -60 && deltaY < 70) {
+                    openReels();
+                }
+                startX = null;
+                startY = null;
+            }, { passive: true });
+        })();
+
+        // Swipe left/right inside the reels track to move between slides,
+        // and swipe down (or tap back) to close.
+        (function setupReelsGestures() {
+            if (!reelsTrack) return;
+            let sx = null, sy = null, dragging = false;
+
+            reelsTrack.addEventListener('touchstart', function (e) {
+                sx = e.touches[0].clientX;
+                sy = e.touches[0].clientY;
+                dragging = true;
+                reelsTrack.style.transition = 'none';
+            }, { passive: true });
+
+            reelsTrack.addEventListener('touchmove', function (e) {
+                if (!dragging || sx === null) return;
+                const dx = e.touches[0].clientX - sx;
+                reelsTrack.style.transform = `translateX(calc(-${reelsIndex * 100}% + ${dx}px))`;
+            }, { passive: true });
+
+            reelsTrack.addEventListener('touchend', function (e) {
+                if (sx === null) return;
+                reelsTrack.style.transition = '';
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                const dx = endX - sx;
+                const dy = endY - sy;
+
+                if (Math.abs(dy) > 90 && Math.abs(dy) > Math.abs(dx)) {
+                    // swipe down (or up) closes the reels view
+                    closeReels();
+                } else if (dx < -50) {
+                    goToReelsSlide(reelsIndex + 1);
+                } else if (dx > 50) {
+                    goToReelsSlide(reelsIndex - 1);
+                } else {
+                    goToReelsSlide(reelsIndex);
+                }
+                sx = null;
+                sy = null;
+                dragging = false;
+            }, { passive: true });
+        })();
 
         // ─── GLOBAL LOADING STATE ─────────────────────────────────────────────
         // Any async operation can call beginAppLoading()/endAppLoading() (or the
