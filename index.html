@@ -69,6 +69,33 @@
             --overlay-tint: rgba(255, 255, 255, 0.3);
         }
 
+        /* AURORA THEME VARIABLES — animated blue/black gradient */
+        [data-theme="aurora"] {
+            --bg-base: #05070d;
+            --glass-bg: rgba(255, 255, 255, 0.045);
+            --glass-border: rgba(120, 170, 255, 0.16);
+            --glass-highlight: rgba(120, 170, 255, 0.14);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(210, 225, 255, 0.6);
+            --accent-orange: #ff8c00;
+            --accent-cyan: #2fd0ff;
+            --accent-violet: #5b7fff;
+            --bg-gradient: none;
+            --overlay-tint: rgba(4, 8, 18, 0.35);
+        }
+
+        @keyframes aurora-bg-drift {
+            0%   { background-position: 0% 30%; }
+            50%  { background-position: 100% 70%; }
+            100% { background-position: 0% 30%; }
+        }
+
+        [data-theme="aurora"] body {
+            background-image: linear-gradient(135deg, #000000 0%, #030811 20%, #08265c 45%, #020509 65%, #000000 85%, #06122b 100%);
+            background-size: 260% 260%;
+            animation: aurora-bg-drift 18s ease-in-out infinite;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -730,53 +757,11 @@
         .feed-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         /* ==========================================================================
-           GLOBAL LOADING STATE — soft blended glow around the UI edge
+           GLOBAL LOADING STATE — top progress bar only (no blur on content)
            ========================================================================== */
-        @keyframes app-loading-spin {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes app-loading-pulse {
-            0%, 100% { opacity: 0.55; }
-            50%      { opacity: 1; }
-        }
-
         @keyframes app-loading-bar-sweep {
             0%   { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
-        }
-
-        .app-container.is-loading::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(120deg, var(--accent-violet), var(--accent-cyan), var(--accent-violet));
-            background-size: 200% 200%;
-            animation: app-loading-spin 2.2s ease infinite, app-loading-pulse 2.2s ease infinite;
-            filter: blur(18px);
-            opacity: 0.55;
-            mix-blend-mode: screen;
-            pointer-events: none;
-            z-index: 300;
-        }
-
-        [data-theme="light"] .app-container.is-loading::before,
-        [data-theme="grey"] .app-container.is-loading::before {
-            mix-blend-mode: multiply;
-            opacity: 0.35;
-        }
-
-        .app-container.is-loading::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            box-shadow: inset 0 0 30px 2px rgba(139, 107, 255, 0.35);
-            pointer-events: none;
-            z-index: 300;
         }
 
         .app-loading-bar {
@@ -790,7 +775,6 @@
             opacity: 0;
             transition: opacity 0.2s ease;
             pointer-events: none;
-            filter: blur(0.5px);
         }
 
         .app-loading-bar.show { opacity: 1; }
@@ -1958,7 +1942,7 @@
                         <div class="settings-row-icon"><i class="fas fa-palette"></i></div>
                         <div class="settings-row-body">
                             <div class="settings-row-title">App Theme</div>
-                            <div class="settings-row-desc">Default, Black, White, or Grey</div>
+                            <div class="settings-row-desc">Default, Black, White, Grey, or Aurora</div>
                         </div>
                         <div class="settings-row-accessory settings-select-wrap">
                             <select id="theme-select" onchange="changeTheme(this.value)">
@@ -1966,6 +1950,7 @@
                                 <option value="pitch-dark">Black</option>
                                 <option value="light">White</option>
                                 <option value="grey">Grey</option>
+                                <option value="aurora">Aurora</option>
                             </select>
                             <i class="fas fa-chevron-down"></i>
                         </div>
@@ -2285,6 +2270,10 @@
                     <div class="theme-swatch-item" data-theme-value="grey" onclick="pickTheme('grey')">
                         <div class="theme-swatch" style="background:#dfe1e6;"></div>
                         <span>Grey</span>
+                    </div>
+                    <div class="theme-swatch-item" data-theme-value="aurora" onclick="pickTheme('aurora')">
+                        <div class="theme-swatch" style="background:linear-gradient(135deg, #000000, #08265c, #000000);"></div>
+                        <span>Aurora</span>
                     </div>
                 </div>
             </div>
