@@ -728,6 +728,69 @@
         .post-left { display: flex; flex-direction: column; align-items: center; }
         .feed-avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--glass-highlight); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: var(--text-secondary); border: 1px solid var(--glass-border); overflow: hidden; }
         .feed-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ==========================================================================
+           SKELETON LOADING SCREEN (feed) — animated purple/blue gradient border
+           ========================================================================== */
+        @keyframes skeleton-border-spin {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes skeleton-shimmer {
+            0%   { background-position: -400px 0; }
+            100% { background-position: 400px 0; }
+        }
+
+        .skeleton-post {
+            position: relative;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding: 3px;
+            border-radius: 18px;
+            background: linear-gradient(120deg, var(--accent-violet), var(--accent-cyan), var(--accent-violet));
+            background-size: 200% 200%;
+            animation: skeleton-border-spin 3s ease infinite;
+        }
+
+        .skeleton-post-inner {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            background: var(--bg-base);
+            border-radius: 15px;
+            padding: 12px;
+        }
+
+        .skeleton-avatar {
+            flex-shrink: 0;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+        }
+
+        .skeleton-avatar,
+        .skeleton-line,
+        .skeleton-img {
+            background: linear-gradient(90deg,
+                var(--glass-bg) 25%,
+                var(--glass-highlight) 50%,
+                var(--glass-bg) 75%);
+            background-size: 800px 100%;
+            animation: skeleton-shimmer 1.6s linear infinite;
+            border-radius: 6px;
+        }
+
+        .skeleton-post-body { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .skeleton-line { height: 12px; }
+        .skeleton-line.w-40 { width: 40%; }
+        .skeleton-line.w-90 { width: 90%; }
+        .skeleton-line.w-70 { width: 70%; }
+        .skeleton-img { width: 100%; height: 140px; border-radius: 12px; margin-top: 2px; }
+
+        #feed-skeleton-wrap { padding-top: 2px; }
         .post-right { flex: 1; display: flex; flex-direction: column; gap: 8px; }
         .post-img-box { width: 100%; border-radius: 15px; overflow: hidden; position: relative; margin-top: 5px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; justify-content: center; align-items: center; }
         .post-img-box img { width: 100%; height: auto; max-height: 70vh; object-fit: contain; display: block; }
@@ -2270,21 +2333,63 @@
         // Calls that go to the Entranex Posts backend (photo/text posts, likes,
         // comments, shares, recommendation feed). Same ennexToken works here too,
         // as long as POSTS_BASE's JWT_SECRET_KEY/JWT_ALGORITHM match AUTH_BASE's.
+        //
+        // Render's free tier spins the service down after inactivity, so the
+        // first request after a while away can take 30-60s to "wake" it and
+        // may fail outright rather than just being slow. postsFetch() retries
+        // a few times with backoff before giving up, instead of failing on the
+        // very first attempt like a normal fetch would.
+        //
+        // A 401 is NOT retried -- it means the JWT itself expired, which a
+        // retry can't fix. That's treated as its own case (prompt re-login)
+        // rather than surfacing as a generic "couldn't connect" error.
+        let sessionExpiredHandled = false;
+        function handleSessionExpired() {
+            if (sessionExpiredHandled) return; // avoid stacking multiple alerts if several requests 401 at once
+            sessionExpiredHandled = true;
+            alert("Your session has expired. Please log in again.");
+            ennexLogout();
+            setTimeout(() => { sessionExpiredHandled = false; }, 2000);
+        }
+
+        async function postsFetch(path, options = {}) {
+            const maxAttempts = 3;
+            let lastErr;
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                try {
+                    const res = await fetch(POSTS_BASE + path, { ...options, headers: authHeaders() });
+                    if (res.status === 401) {
+                        handleSessionExpired();
+                        throw new Error("Session expired");
+                    }
+                    if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
+                    return res;
+                } catch (e) {
+                    if (e.message === "Session expired") throw e;
+                    lastErr = e;
+                    if (attempt < maxAttempts) {
+                        await new Promise(r => setTimeout(r, attempt * 4000));
+                    }
+                }
+            }
+            throw new Error(
+                "Couldn't reach the posts service. If the app hasn't been used " +
+                "in a while, the server may still be waking up -- please try again shortly."
+            );
+        }
+
         async function postsGet(path) {
-            const res = await fetch(POSTS_BASE + path, { headers: authHeaders() });
-            if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
+            const res = await postsFetch(path);
             return res.json();
         }
 
         async function postsPost(path, body) {
-            const res = await fetch(POSTS_BASE + path, { method: "POST", headers: authHeaders(), body: JSON.stringify(body || {}) });
-            if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
+            const res = await postsFetch(path, { method: "POST", body: JSON.stringify(body || {}) });
             return res.status === 204 ? null : res.json();
         }
 
         async function postsDelete(path) {
-            const res = await fetch(POSTS_BASE + path, { method: "DELETE", headers: authHeaders() });
-            if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
+            const res = await postsFetch(path, { method: "DELETE" });
             if (res.status === 204) return null;
             try { return await res.json(); } catch (_) { return null; }
         }
@@ -4124,8 +4229,27 @@
             });
         }
 
+        function showFeedSkeleton() {
+            const container = document.getElementById('dynamic-feed');
+            if (!container) return;
+            const card = `
+                <div class="skeleton-post">
+                    <div class="skeleton-post-inner">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-post-body">
+                            <div class="skeleton-line w-40"></div>
+                            <div class="skeleton-line w-90"></div>
+                            <div class="skeleton-line w-70"></div>
+                            <div class="skeleton-img"></div>
+                        </div>
+                    </div>
+                </div>`;
+            container.innerHTML = `<div id="feed-skeleton-wrap">${card.repeat(3)}</div>`;
+        }
+
         async function loadFeedFromServer() {
             const container = document.getElementById('dynamic-feed');
+            showFeedSkeleton();
             try {
                 const path = currentFeedMode === 'recommended' ? '/posts/recommended?limit=30' : '/posts/feed?limit=30';
                 const serverPosts = await postsGet(path);
@@ -4139,6 +4263,7 @@
                             <i class="fas fa-plug-circle-xmark"></i>
                             <h3>Couldn't load feed</h3>
                             <p style="font-size:12px;opacity:0.7;word-break:break-word;">${(e.message || 'Unknown error').replace(/</g, '&lt;')}</p>
+                            <button class="btn btn-save" style="max-width:160px; margin:14px auto 0;" onclick="loadFeedFromServer()">Retry</button>
                         </div>`;
                 }
             }
