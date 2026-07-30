@@ -541,14 +541,26 @@
         .rolls-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             padding: 14px 16px;
             color: #fff;
-            z-index: 2;
-            position: relative;
+            z-index: 3;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
         }
-        .rolls-back { font-size: 1.3rem; cursor: pointer; width: 32px; }
-        .rolls-title { font-weight: 600; letter-spacing: 0.5px; }
+        .rolls-back {
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.28);
+            backdrop-filter: blur(6px);
+        }
 
         .rolls-track {
             flex: 1;
@@ -597,6 +609,20 @@
             pointer-events: none;
         }
 
+        .rolls-watermark {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            z-index: 2;
+            font-size: 0.82rem;
+            font-weight: 700;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.85);
+            text-shadow: 0 1px 6px rgba(0,0,0,0.55);
+            pointer-events: none;
+        }
+
         .rolls-slide-info {
             position: relative;
             z-index: 1;
@@ -621,24 +647,6 @@
         .rolls-slide-caption { font-size: 0.85rem; opacity: 0.92; line-height: 1.4; }
         .rolls-slide-stats { display: flex; gap: 18px; margin-top: 12px; font-size: 0.8rem; opacity: 0.9; }
         .rolls-slide-stats span { display: flex; align-items: center; gap: 5px; }
-
-        .rolls-dots {
-            position: absolute;
-            top: 56px;
-            left: 16px;
-            right: 16px;
-            display: flex;
-            gap: 4px;
-            z-index: 2;
-        }
-        .rolls-dots .dot {
-            flex: 1;
-            height: 3px;
-            border-radius: 2px;
-            background: rgba(255,255,255,0.3);
-            overflow: hidden;
-        }
-        .rolls-dots .dot.active { background: #fff; }
 
         .rolls-empty {
             color: rgba(255,255,255,0.6);
@@ -1775,11 +1783,8 @@
         <div class="rolls-overlay" id="rolls-overlay">
             <div class="rolls-header">
                 <i class="fas fa-chevron-left rolls-back" onclick="closeRolls()"></i>
-                <span class="rolls-title">Rolls</span>
-                <span style="width:32px;"></span>
             </div>
             <div class="rolls-track" id="rolls-track"></div>
-            <div class="rolls-dots" id="rolls-dots"></div>
         </div>
 
         <!-- Feed filter: small edge tab, swipe right (or tap) to open the filter drawer -->
@@ -4447,7 +4452,6 @@
         // between posts (transform-based) rather than scrolling.
         const rollsOverlay = document.getElementById('rolls-overlay');
         const rollsTrack = document.getElementById('rolls-track');
-        const rollsDots = document.getElementById('rolls-dots');
         let rollsIndex = 0;
         let rollsSlideCount = 0;
 
@@ -4463,7 +4467,6 @@
                             <div>No posts to slide through yet</div>
                         </div>
                     </div>`;
-                rollsDots.innerHTML = '';
                 return;
             }
 
@@ -4472,6 +4475,7 @@
                 if (post.isTextOnly) {
                     return `
                         <div class="rolls-slide text-slide">
+                            <div class="rolls-watermark">Rolls</div>
                             <div class="rolls-caption-big">${escapeHtml(post.text)}</div>
                             <div class="rolls-slide-info" style="position:absolute; bottom:0;">
                                 <div class="rolls-slide-user">
@@ -4489,6 +4493,7 @@
                     <div class="rolls-slide">
                         <img src="${post.image}" alt="Post photo" loading="lazy">
                         <div class="rolls-slide-scrim"></div>
+                        <div class="rolls-watermark">Rolls</div>
                         <div class="rolls-slide-info">
                             <div class="rolls-slide-user">
                                 <div class="rolls-slide-avatar">${avatarHTML}</div>
@@ -4502,15 +4507,12 @@
                         </div>
                     </div>`;
             }).join('');
-
-            rollsDots.innerHTML = usable.map((_, i) => `<div class="dot${i === 0 ? ' active' : ''}"></div>`).join('');
         }
 
         function goToRollsSlide(index) {
             if (rollsSlideCount === 0) return;
             rollsIndex = Math.max(0, Math.min(index, rollsSlideCount - 1));
             rollsTrack.style.transform = `translateX(-${rollsIndex * 100}%)`;
-            rollsDots.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === rollsIndex));
         }
 
         function openRolls() {
