@@ -1176,7 +1176,15 @@
         .theme-swatch-item span { font-size: 0.74rem; color: var(--text-secondary); font-weight: 500; }
         .theme-swatch-item.active span { color: var(--accent-cyan); font-weight: 600; }
         .filter-chip.active { background: var(--glass-highlight); border-color: var(--text-primary); color: var(--text-primary); }
-        #dynamic-chat-list { display: flex; flex-direction: column; gap: 12px; }
+        #dynamic-chat-list { display: flex; flex-direction: column; }
+
+        .chat-row { display: flex; align-items: center; gap: 15px; padding: 14px 4px; border-bottom: 1px solid var(--glass-border); cursor: pointer; transition: var(--transition-standard); }
+        .chat-row:last-child { border-bottom: none; }
+        .chat-row:hover, .chat-row:active { background: var(--glass-highlight); }
+        .chat-row-status { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
+        .chat-row-status .status-tick { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.2px; }
+        .chat-row-status .status-tick.sent { color: var(--text-secondary); }
+        .chat-row-status .status-tick.seen { color: var(--accent-cyan); }
 
         .list-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 15px; cursor: pointer; transition: var(--transition-standard); }
         .list-item:hover { background: var(--glass-highlight); }
@@ -3585,13 +3593,26 @@
                     ? `<div class="list-unread-badge">${unread > 99 ? '99+' : unread}</div>`
                     : '';
 
+                // Only show a status tick for the last message when it was
+                // sent by the current user. "gone" = sent/delivered.
+                // "checked" = seen — flips once the backend confirms the
+                // other person has read it (preview.seen), same as any
+                // other messenger's read receipt.
+                let statusTick = '';
+                if (preview && preview.isMine) {
+                    statusTick = preview.seen
+                        ? `<div class="chat-row-status"><span class="status-tick seen">checked</span></div>`
+                        : `<div class="chat-row-status"><span class="status-tick sent">gone</span></div>`;
+                }
+
                 container.innerHTML += `
-                    <div class="list-item" onclick="openConversation('${conv.id}', '${name.replace(/'/g, "\\'")}')">
+                    <div class="chat-row list-item" onclick="openConversation('${conv.id}', '${name.replace(/'/g, "\\'")}')">
                         <div class="list-avatar"><i class="${iconClass}"></i></div>
                         <div class="list-content">
                             <div class="list-title">${name}</div>
                             <div class="list-desc">${previewText}</div>
                         </div>
+                        ${statusTick}
                         ${unreadBadge}
                     </div>`;
             });
