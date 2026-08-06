@@ -516,6 +516,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            touch-action: pan-y;
         }
 
         .screen::-webkit-scrollbar { display: none; }
@@ -1837,23 +1838,19 @@
         </div>
 
         <main id="chat-screen" class="screen hidden">
-            <div class="search-input-wrapper chat-header-search">
+            <div class="chat-title-row">
+                <div class="brand" style="font-size: 1.3rem;">Entranex</div>
+                <div style="display: flex; align-items: center; gap: 18px;">
+                    <i class="fas fa-search chat-menu-icon" onclick="toggleChatHeaderSearch()"></i>
+                    <i class="fas fa-bars chat-menu-icon" onclick="toggleChatMenu()"></i>
+                </div>
+            </div>
+
+            <div class="search-input-wrapper chat-header-search hidden" id="chat-header-search-wrapper">
                 <i class="fas fa-search"></i>
                 <input type="text" id="chat-internal-search" class="integrated-search" placeholder="Search chats..."
                     onkeyup="filterChatsLocally()">
             </div>
-
-            <div class="chat-title-row">
-                <div></div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <button class="sketch-btn active-filter" style="border-color: var(--accent-cyan); padding: 5px 12px; font-size: 0.85rem;" onclick="startAlienChat()">
-                        <i class="fas fa-user-astronaut"></i> Alien Chat
-                    </button>
-                    <i class="fas fa-ellipsis-v chat-menu-icon" onclick="toggleChatMenu()"></i>
-                </div>
-            </div>
-
-            <div class="chat-featured-box" id="active-users-carousel"></div>
 
             <div class="chat-filter-row">
                 <button class="filter-chip active" onclick="setChatFilter('chat', this)">Chat</button>
@@ -3259,6 +3256,18 @@
         }
 
         function toggleChatMenu() { document.getElementById('chat-menu-sheet').classList.toggle('active'); }
+
+        function toggleChatHeaderSearch() {
+            const wrapper = document.getElementById('chat-header-search-wrapper');
+            wrapper.classList.toggle('hidden');
+            if (!wrapper.classList.contains('hidden')) {
+                const input = document.getElementById('chat-internal-search');
+                if (input) input.focus();
+            } else {
+                const input = document.getElementById('chat-internal-search');
+                if (input) { input.value = ''; filterChatsLocally(); }
+            }
+        }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         // ── Drawing pad (hamburger menu) ──
@@ -3499,31 +3508,7 @@
         }
 
         function renderActiveCarousel() {
-            const container = document.getElementById('active-users-carousel');
-            container.innerHTML = '';
-            if (activePeoples.length === 0) {
-                container.innerHTML = `
-                    <div class="active-user-item">
-                        <div class="active-avatar-wrapper">
-                            <div class="active-avatar"><i class="fas fa-user"></i></div>
-                            <div class="cyan-dot"></div>
-                        </div>
-                        <div class="active-user-name">${userData.name}</div>
-                    </div>`;
-            } else {
-                activePeoples.forEach(person => {
-                    container.innerHTML += `
-                        <div class="active-user-item" onclick="openChat('${person.name}')">
-                            <div class="active-avatar-wrapper">
-                                <div class="active-avatar">
-                                    ${person.avatar ? `<img src="${person.avatar}" />` : `<i class="fas fa-user"></i>`}
-                                </div>
-                                <div class="cyan-dot"></div>
-                            </div>
-                            <div class="active-user-name">${person.name}</div>
-                        </div>`;
-                });
-            }
+            // Carousel removed from chat screen; no-op retained so existing calls don't error.
         }
 
         // ─── CONVERSATIONS (API) ──────────────────────────────────────────────
@@ -4582,14 +4567,17 @@
         })();
 
         // Swipe-left-to-open on the feed screen itself. The overlay follows the
-        // finger live (peek-and-commit) instead of only reacting on release,
-        // and yields to vertical scrolling so it doesn't fight the feed.
+        // finger live (peek-and-commit) instead of only reacting on release.
+        // touchmove is non-passive so we can claim the gesture with
+        // preventDefault() once horizontal intent is detected — otherwise the
+        // browser's native vertical scroll fights our transform updates and
+        // the drag feels stuttery / stuck.
         (function setupFeedSwipeToRolls() {
             const feedScreen = document.getElementById('feed-screen');
             if (!feedScreen || !rollsOverlay) return;
 
-            const OPEN_COMMIT_RATIO = 0.28; // fraction of screen width to commit to opening
-            const DIRECTION_LOCK_PX = 10;   // how many px of movement before we decide gesture direction
+            const OPEN_COMMIT_RATIO = 0.22; // fraction of screen width to commit to opening
+            const DIRECTION_LOCK_PX = 8;    // px of movement before we decide gesture direction
 
             let startX = null, startY = null;
             let dragging = false;   // actively dragging the overlay open
@@ -4598,6 +4586,7 @@
             let screenW = window.innerWidth;
 
             feedScreen.addEventListener('touchstart', function (e) {
+                if (e.touches.length !== 1) return;
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
                 dragging = false;
@@ -4614,7 +4603,9 @@
                 if (!decided) {
                     if (Math.abs(dx) > DIRECTION_LOCK_PX || Math.abs(dy) > DIRECTION_LOCK_PX) {
                         decided = true;
-                        horizontal = Math.abs(dx) > Math.abs(dy) && dx < 0;
+                        // Only start on a left-swipe near the top of the feed,
+                        // and only when it's clearly more horizontal than vertical.
+                        horizontal = Math.abs(dx) > Math.abs(dy) * 1.2 && dx < 0;
                         if (horizontal) {
                             dragging = true;
                             buildRollsSlides();
@@ -4623,37 +4614,50 @@
                             rollsTrack.style.transform = 'translateX(0)';
                             rollsOverlay.style.transition = 'none';
                             rollsOverlay.classList.add('open');
+                            rollsOverlay.style.transform = 'translateX(100%)';
+                            // Force layout so the browser registers the starting
+                            // position before we start animating it on the next move.
+                            void rollsOverlay.offsetHeight;
                         }
                     }
                 }
 
                 if (dragging && horizontal) {
-                    // Reveal the overlay progressively as the finger moves left.
+                    // We own this gesture now — stop the feed from scrolling.
+                    e.preventDefault();
                     const progress = Math.min(1, Math.max(0, -dx / screenW));
                     rollsOverlay.style.transform = `translateX(${(1 - progress) * 100}%)`;
                 }
-            }, { passive: true });
+            }, { passive: false });
+
+            function finishDrag(endX) {
+                if (!(dragging && horizontal)) {
+                    startX = null; startY = null;
+                    dragging = false; decided = false; horizontal = false;
+                    return;
+                }
+                const dx = endX - startX;
+                const progress = Math.min(1, Math.max(0, -dx / screenW));
+                const commit = progress >= OPEN_COMMIT_RATIO;
+
+                rollsOverlay.style.transition = 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
+                rollsOverlay.style.transform = commit ? 'translateX(0)' : 'translateX(100%)';
+
+                const overlayEl = rollsOverlay;
+                const onEnd = function () {
+                    overlayEl.removeEventListener('transitionend', onEnd);
+                    overlayEl.style.transition = '';
+                    overlayEl.style.transform = '';
+                    if (!commit) overlayEl.classList.remove('open');
+                };
+                overlayEl.addEventListener('transitionend', onEnd);
+
+                startX = null; startY = null;
+                dragging = false; decided = false; horizontal = false;
+            }
 
             feedScreen.addEventListener('touchend', function (e) {
-                if (dragging && horizontal) {
-                    const endX = e.changedTouches[0].clientX;
-                    const dx = endX - startX;
-                    const progress = Math.min(1, Math.max(0, -dx / screenW));
-
-                    rollsOverlay.style.transition = '';
-                    rollsOverlay.style.transform = '';
-
-                    if (progress >= OPEN_COMMIT_RATIO) {
-                        rollsOverlay.classList.add('open');
-                    } else {
-                        rollsOverlay.classList.remove('open');
-                    }
-                }
-                startX = null;
-                startY = null;
-                dragging = false;
-                decided = false;
-                horizontal = false;
+                finishDrag(e.changedTouches[0].clientX);
             }, { passive: true });
 
             feedScreen.addEventListener('touchcancel', function () {
@@ -4662,11 +4666,8 @@
                     rollsOverlay.style.transform = '';
                     rollsOverlay.classList.remove('open');
                 }
-                startX = null;
-                startY = null;
-                dragging = false;
-                decided = false;
-                horizontal = false;
+                startX = null; startY = null;
+                dragging = false; decided = false; horizontal = false;
             }, { passive: true });
         })();
 
