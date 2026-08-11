@@ -187,15 +187,20 @@
             inset: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: 0;
             display: none;
             background: #000000;
         }
         [data-theme="terminal"] #linux-terminal-canvas { display: block; }
+        [data-theme="terminal"] body { background-color: transparent; }
         [data-theme="terminal"] .app-container,
         [data-theme="terminal"] #auth-screen,
         [data-theme="terminal"] #intro-screen {
-            background: transparent !important;
+            background: rgba(0, 10, 0, 0.35) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            position: relative;
+            z-index: 1;
         }
 
         * {
