@@ -123,7 +123,7 @@
             animation: matrix-bg-drift 18s ease-in-out infinite;
         }
 
-        /* GOLDRUSH THEME VARIABLES — black/yellow */
+        /* GOLDRUSH THEME VARIABLES — animated black/yellow gradient */
         [data-theme="goldrush"] {
             --bg-base: #0a0a08;
             --glass-bg: rgba(255, 214, 0, 0.05);
@@ -138,23 +138,64 @@
             --overlay-tint: rgba(10, 9, 0, 0.4);
         }
 
-        /* LINUX THEME VARIABLES — terminal-inspired, black bg with amber/green text accents */
-        [data-theme="linux"] {
-            --bg-base: #0c0c0c;
-            --glass-bg: rgba(38, 38, 38, 0.55);
-            --glass-border: rgba(0, 200, 90, 0.25);
-            --glass-highlight: rgba(0, 200, 90, 0.12);
-            --text-primary: #d7d7d7;
-            --text-secondary: rgba(0, 210, 100, 0.7);
-            --accent-orange: #ffb000;
-            --accent-cyan: #00d26a;
-            --accent-violet: #33ff99;
-            --bg-gradient: none;
-            --overlay-tint: rgba(0, 0, 0, 0.5);
+        @keyframes goldrush-bg-drift {
+            0%   { background-position: 0% 30%; }
+            50%  { background-position: 100% 70%; }
+            100% { background-position: 0% 30%; }
         }
 
-        [data-theme="linux"] body {
-            font-family: 'Courier New', 'Consolas', monospace;
+        [data-theme="goldrush"] body {
+            background-image: linear-gradient(135deg, #000000 0%, #0f0a00 20%, #7a5c00 45%, #050300 65%, #000000 85%, #4d3800 100%);
+            background-size: 260% 260%;
+            animation: goldrush-bg-drift 18s ease-in-out infinite;
+        }
+
+        /* LINUX THEME VARIABLES — full terminal look with animated canvas backdrop */
+        [data-theme="linux"] {
+            --bg-base: #000000;
+            --glass-bg: rgba(0, 20, 0, 0.55);
+            --glass-border: rgba(51, 255, 102, 0.3);
+            --glass-highlight: rgba(51, 255, 102, 0.12);
+            --text-primary: #33ff66;
+            --text-secondary: rgba(51, 255, 102, 0.6);
+            --accent-orange: #ffb000;
+            --accent-cyan: #33ff66;
+            --accent-violet: #7dff9e;
+            --bg-gradient: none;
+            --overlay-tint: rgba(0, 0, 0, 0.55);
+        }
+
+        [data-theme="linux"] body,
+        [data-theme="linux"] input,
+        [data-theme="linux"] textarea,
+        [data-theme="linux"] select,
+        [data-theme="linux"] button {
+            font-family: 'Courier New', Courier, monospace !important;
+        }
+
+        [data-theme="linux"] .glass-header,
+        [data-theme="linux"] .list-item,
+        [data-theme="linux"] .chat-row,
+        [data-theme="linux"] .post-card,
+        [data-theme="linux"] .modal-content,
+        [data-theme="linux"] .action-sheet-content {
+            border-radius: 2px !important;
+        }
+
+        #linux-terminal-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            display: none;
+            background: #000000;
+        }
+        [data-theme="linux"] #linux-terminal-canvas { display: block; }
+        [data-theme="linux"] .app-container,
+        [data-theme="linux"] #auth-screen,
+        [data-theme="linux"] #intro-screen {
+            background: transparent !important;
         }
 
         * {
@@ -1816,6 +1857,7 @@
 </head>
 
 <body>
+    <canvas id="linux-terminal-canvas"></canvas>
     <!-- REMOTE POPUP NOTIFICATION (Front 1 display, driven by Front 2 admin.html) -->
     <div class="ennex-popup-overlay" id="ennexPopupOverlay">
         <div class="ennex-popup-card" id="ennexPopupCard">
@@ -3458,6 +3500,81 @@
             if (select) select.value = themeMode;
             localStorage.setItem('entranexTheme', themeMode);
             syncThemeSwatchActive();
+            updateLinuxTerminalCanvas(themeMode);
+        }
+
+        // ─── Linux theme: animated terminal-rain canvas background ────────────
+        let linuxTerminalRAF = null;
+        let linuxTerminalCtx = null;
+
+        function updateLinuxTerminalCanvas(themeMode) {
+            const canvas = document.getElementById('linux-terminal-canvas');
+            if (!canvas) return;
+
+            if (themeMode === 'linux') {
+                startLinuxTerminalCanvas(canvas);
+            } else {
+                stopLinuxTerminalCanvas();
+            }
+        }
+
+        function startLinuxTerminalCanvas(canvas) {
+            stopLinuxTerminalCanvas();
+            const ctx = canvas.getContext('2d');
+            linuxTerminalCtx = ctx;
+
+            const fontSize = 14;
+            const chars = "01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz$#@%&*<>/\\{}[]_-=+;:.,";
+            let columns, drops;
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                columns = Math.floor(canvas.width / fontSize);
+                drops = new Array(columns).fill(0).map(() => Math.floor(Math.random() * -40));
+            }
+            resize();
+            window.addEventListener('resize', resize);
+            canvas._linuxResizeHandler = resize;
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.font = fontSize + 'px "Courier New", monospace';
+                for (let i = 0; i < columns; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    const x = i * fontSize;
+                    const y = drops[i] * fontSize;
+
+                    ctx.fillStyle = 'rgba(51, 255, 102, 0.85)';
+                    ctx.fillText(char, x, y);
+
+                    if (y > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+                linuxTerminalRAF = requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        function stopLinuxTerminalCanvas() {
+            if (linuxTerminalRAF) {
+                cancelAnimationFrame(linuxTerminalRAF);
+                linuxTerminalRAF = null;
+            }
+            const canvas = document.getElementById('linux-terminal-canvas');
+            if (canvas) {
+                if (canvas._linuxResizeHandler) {
+                    window.removeEventListener('resize', canvas._linuxResizeHandler);
+                    canvas._linuxResizeHandler = null;
+                }
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            linuxTerminalCtx = null;
         }
 
         function toggleChatMenu() { document.getElementById('chat-menu-sheet').classList.toggle('active'); }
