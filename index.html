@@ -96,6 +96,67 @@
             animation: aurora-bg-drift 18s ease-in-out infinite;
         }
 
+        /* MATRIX THEME VARIABLES — animated green/black gradient */
+        [data-theme="matrix"] {
+            --bg-base: #030603;
+            --glass-bg: rgba(0, 255, 120, 0.045);
+            --glass-border: rgba(0, 255, 130, 0.18);
+            --glass-highlight: rgba(0, 255, 130, 0.14);
+            --text-primary: #d9ffe4;
+            --text-secondary: rgba(150, 255, 180, 0.6);
+            --accent-orange: #ff8c00;
+            --accent-cyan: #00ff88;
+            --accent-violet: #2fff8f;
+            --bg-gradient: none;
+            --overlay-tint: rgba(2, 8, 4, 0.4);
+        }
+
+        @keyframes matrix-bg-drift {
+            0%   { background-position: 0% 30%; }
+            50%  { background-position: 100% 70%; }
+            100% { background-position: 0% 30%; }
+        }
+
+        [data-theme="matrix"] body {
+            background-image: linear-gradient(135deg, #000000 0%, #020a03 20%, #063d1a 45%, #010702 65%, #000000 85%, #072b12 100%);
+            background-size: 260% 260%;
+            animation: matrix-bg-drift 18s ease-in-out infinite;
+        }
+
+        /* GOLDRUSH THEME VARIABLES — black/yellow */
+        [data-theme="goldrush"] {
+            --bg-base: #0a0a08;
+            --glass-bg: rgba(255, 214, 0, 0.05);
+            --glass-border: rgba(255, 214, 0, 0.2);
+            --glass-highlight: rgba(255, 214, 0, 0.14);
+            --text-primary: #fff8e0;
+            --text-secondary: rgba(255, 224, 130, 0.6);
+            --accent-orange: #ffb300;
+            --accent-cyan: #ffd600;
+            --accent-violet: #ffca28;
+            --bg-gradient: none;
+            --overlay-tint: rgba(10, 9, 0, 0.4);
+        }
+
+        /* LINUX THEME VARIABLES — terminal-inspired, black bg with amber/green text accents */
+        [data-theme="linux"] {
+            --bg-base: #0c0c0c;
+            --glass-bg: rgba(38, 38, 38, 0.55);
+            --glass-border: rgba(0, 200, 90, 0.25);
+            --glass-highlight: rgba(0, 200, 90, 0.12);
+            --text-primary: #d7d7d7;
+            --text-secondary: rgba(0, 210, 100, 0.7);
+            --accent-orange: #ffb000;
+            --accent-cyan: #00d26a;
+            --accent-violet: #33ff99;
+            --bg-gradient: none;
+            --overlay-tint: rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="linux"] body {
+            font-family: 'Courier New', 'Consolas', monospace;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -1178,8 +1239,18 @@
         .filter-chip.active { background: var(--glass-highlight); border-color: var(--text-primary); color: var(--text-primary); }
         #dynamic-chat-list { display: flex; flex-direction: column; }
 
-        .chat-row { display: flex; align-items: center; gap: 15px; padding: 14px 4px; border-bottom: 1px solid var(--glass-border); cursor: pointer; transition: var(--transition-standard); }
-        .chat-row:last-child { border-bottom: none; }
+        .chat-row { position: relative; display: flex; align-items: center; gap: 15px; padding: 14px 4px; cursor: pointer; transition: var(--transition-standard); }
+        .chat-row::after {
+            content: "";
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            bottom: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border) 25%, var(--glass-border) 75%, transparent);
+            filter: blur(0.6px);
+        }
+        .chat-row:last-child::after { display: none; }
         .chat-row:hover, .chat-row:active { background: var(--glass-highlight); }
 
         /* ── Welcome back banner (fades in on load, then fades away) ── */
@@ -1244,6 +1315,7 @@
             flex-shrink: 0;
         }
         #connection-status-pill.status-error .status-dot { background: #e74c3c; box-shadow: 0 0 6px #e74c3c; }
+        #connection-status-pill.status-fade-out { opacity: 0; pointer-events: none; }
         @keyframes statusSpin { to { transform: rotate(360deg); } }
 
         .list-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 15px; cursor: pointer; transition: var(--transition-standard); }
@@ -2210,7 +2282,7 @@
                         <div class="settings-row-icon"><i class="fas fa-palette"></i></div>
                         <div class="settings-row-body">
                             <div class="settings-row-title">App Theme</div>
-                            <div class="settings-row-desc">Default, Black, White, Grey, or Aurora</div>
+                            <div class="settings-row-desc">Default, Black, White, Grey, Aurora, Matrix, Gold Rush, or Linux</div>
                         </div>
                         <div class="settings-row-accessory settings-select-wrap">
                             <select id="theme-select" onchange="changeTheme(this.value)">
@@ -2219,6 +2291,9 @@
                                 <option value="light">White</option>
                                 <option value="grey">Grey</option>
                                 <option value="aurora">Aurora</option>
+                                <option value="matrix">Matrix</option>
+                                <option value="goldrush">Gold Rush</option>
+                                <option value="linux">Linux</option>
                             </select>
                             <i class="fas fa-chevron-down"></i>
                         </div>
@@ -2543,6 +2618,18 @@
                         <div class="theme-swatch" style="background:linear-gradient(135deg, #000000, #08265c, #000000);"></div>
                         <span>Aurora</span>
                     </div>
+                    <div class="theme-swatch-item" data-theme-value="matrix" onclick="pickTheme('matrix')">
+                        <div class="theme-swatch" style="background:linear-gradient(135deg, #000000, #0a4d20, #000000);"></div>
+                        <span>Matrix</span>
+                    </div>
+                    <div class="theme-swatch-item" data-theme-value="goldrush" onclick="pickTheme('goldrush')">
+                        <div class="theme-swatch" style="background:linear-gradient(135deg, #0a0a08, #ffd600);"></div>
+                        <span>Gold Rush</span>
+                    </div>
+                    <div class="theme-swatch-item" data-theme-value="linux" onclick="pickTheme('linux')">
+                        <div class="theme-swatch" style="background:#0c0c0c; border:1px solid rgba(0,210,100,0.4);"></div>
+                        <span>Linux</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2726,19 +2813,29 @@
 
         // ─── WEBSOCKET (Real-time) ────────────────────────────────────────────
         let ws = null;
+        let connectionStatusHideTimer = null;
+
         function setConnectionStatus(state) {
             // state: 'connecting' | 'connected' | 'error'
             const pill = document.getElementById('connection-status-pill');
             const icon = document.getElementById('connection-status-icon');
             const text = document.getElementById('connection-status-text');
             if (!pill || !icon || !text) return;
-            pill.classList.remove('status-error');
+
+            if (connectionStatusHideTimer) { clearTimeout(connectionStatusHideTimer); connectionStatusHideTimer = null; }
+            pill.classList.remove('status-error', 'status-fade-out');
+
             if (state === 'connecting') {
                 icon.outerHTML = '<div class="status-spinner" id="connection-status-icon"></div>';
                 text.textContent = 'Connecting...';
             } else if (state === 'connected') {
                 document.getElementById('connection-status-icon').outerHTML = '<div class="status-dot" id="connection-status-icon"></div>';
                 text.textContent = 'Live';
+                // Once we've confirmed the connection, the pill has done its
+                // job — fade it out so it doesn't sit on screen permanently.
+                connectionStatusHideTimer = setTimeout(() => {
+                    pill.classList.add('status-fade-out');
+                }, 2200);
             } else if (state === 'error') {
                 pill.classList.add('status-error');
                 document.getElementById('connection-status-icon').outerHTML = '<div class="status-dot" id="connection-status-icon"></div>';
