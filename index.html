@@ -1181,10 +1181,70 @@
         .chat-row { display: flex; align-items: center; gap: 15px; padding: 14px 4px; border-bottom: 1px solid var(--glass-border); cursor: pointer; transition: var(--transition-standard); }
         .chat-row:last-child { border-bottom: none; }
         .chat-row:hover, .chat-row:active { background: var(--glass-highlight); }
-        .chat-row-status { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
-        .chat-row-status .status-tick { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.2px; }
-        .chat-row-status .status-tick.sent { color: var(--text-secondary); }
-        .chat-row-status .status-tick.seen { color: var(--accent-cyan); }
+
+        /* ── Welcome back banner (fades in on load, then fades away) ── */
+        #welcome-back-banner {
+            position: fixed;
+            top: 78px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            z-index: 700;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            white-space: nowrap;
+        }
+        #welcome-back-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #welcome-back-banner i { color: var(--accent-cyan); margin-right: 8px; }
+
+        /* ── Live connection status pill (bottom-left) ── */
+        #connection-status-pill {
+            position: fixed;
+            bottom: 18px;
+            left: 14px;
+            z-index: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 7px 14px 7px 10px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            transition: opacity 0.4s ease;
+        }
+        #connection-status-pill .status-spinner {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.25);
+            border-top-color: var(--accent-cyan);
+            animation: statusSpin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+        #connection-status-pill .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2ecc71;
+            box-shadow: 0 0 6px #2ecc71;
+            flex-shrink: 0;
+        }
+        #connection-status-pill.status-error .status-dot { background: #e74c3c; box-shadow: 0 0 6px #e74c3c; }
+        @keyframes statusSpin { to { transform: rotate(360deg); } }
 
         .list-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 15px; cursor: pointer; transition: var(--transition-standard); }
         .list-item:hover { background: var(--glass-highlight); }
@@ -1770,6 +1830,11 @@
     </div>
 
     <div class="app-container hidden" id="app-container">
+        <div id="welcome-back-banner"><i class="fas fa-hand-sparkles"></i><span id="welcome-back-text">Welcome Back</span></div>
+        <div id="connection-status-pill">
+            <div class="status-spinner" id="connection-status-icon"></div>
+            <span id="connection-status-text">Connecting...</span>
+        </div>
         <div class="app-loading-bar" id="app-loading-bar"></div>
 
 
@@ -1847,7 +1912,10 @@
 
         <main id="chat-screen" class="screen hidden">
             <div class="chat-title-row">
-                <div class="brand" style="font-size: 1.3rem;">Entranex</div>
+                <div style="display: flex; align-items: baseline; gap: 6px;">
+                    <div class="brand" style="font-size: 1.3rem;">Entranex</div>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">Messenger</span>
+                </div>
                 <div style="display: flex; align-items: center; gap: 18px;">
                     <i class="fas fa-search chat-menu-icon" onclick="toggleChatHeaderSearch()"></i>
                     <i class="fas fa-bars chat-menu-icon" onclick="toggleChatMenu()"></i>
@@ -2658,12 +2726,33 @@
 
         // ─── WEBSOCKET (Real-time) ────────────────────────────────────────────
         let ws = null;
+        function setConnectionStatus(state) {
+            // state: 'connecting' | 'connected' | 'error'
+            const pill = document.getElementById('connection-status-pill');
+            const icon = document.getElementById('connection-status-icon');
+            const text = document.getElementById('connection-status-text');
+            if (!pill || !icon || !text) return;
+            pill.classList.remove('status-error');
+            if (state === 'connecting') {
+                icon.outerHTML = '<div class="status-spinner" id="connection-status-icon"></div>';
+                text.textContent = 'Connecting...';
+            } else if (state === 'connected') {
+                document.getElementById('connection-status-icon').outerHTML = '<div class="status-dot" id="connection-status-icon"></div>';
+                text.textContent = 'Live';
+            } else if (state === 'error') {
+                pill.classList.add('status-error');
+                document.getElementById('connection-status-icon').outerHTML = '<div class="status-dot" id="connection-status-icon"></div>';
+                text.textContent = 'Reconnecting...';
+            }
+        }
+
         function connectWebSocket() {
             if (!ennexToken) return;
+            setConnectionStatus('connecting');
             const wsUrl = APP_BASE.replace("https://", "wss://").replace("http://", "ws://");
             ws = new WebSocket(`${wsUrl}/ws?token=${ennexToken}`);
 
-            ws.onopen = () => console.log("WS connected");
+            ws.onopen = () => { console.log("WS connected"); setConnectionStatus('connected'); };
 
             ws.onmessage = (e) => {
                 const { event, data } = JSON.parse(e.data);
@@ -2675,7 +2764,7 @@
                 if (event === "group_created") onGroupCreated(data);
             };
 
-            ws.onclose = () => setTimeout(connectWebSocket, 3000); // auto-reconnect
+            ws.onclose = () => { setConnectionStatus('error'); setTimeout(connectWebSocket, 3000); }; // auto-reconnect
         }
 
         // ─── APP STATE ────────────────────────────────────────────────────────
@@ -2778,6 +2867,17 @@
             renderNotifications();
             updateBadges();
             connectWebSocket();
+            showWelcomeBackBanner();
+        }
+
+        function showWelcomeBackBanner() {
+            const banner = document.getElementById('welcome-back-banner');
+            const textEl = document.getElementById('welcome-back-text');
+            if (!banner || !textEl) return;
+            const firstName = (userData.name || 'back').split(' ')[0];
+            textEl.textContent = `Welcome Back, ${firstName}`;
+            banner.classList.add('show');
+            setTimeout(() => banner.classList.remove('show'), 2800);
         }
 
         function ennexLogout() {
@@ -3585,34 +3685,30 @@
                 }
 
                 const preview = lastMessagePreview[conv.id];
-                const previewText = preview
-                    ? (preview.isMine ? 'You: ' : '') + preview.text
-                    : 'Tap to open chat';
                 const unread = unreadCounts[conv.id] || 0;
                 const unreadBadge = unread > 0
                     ? `<div class="list-unread-badge">${unread > 99 ? '99+' : unread}</div>`
                     : '';
 
-                // Only show a status tick for the last message when it was
-                // sent by the current user. "gone" = sent/delivered.
-                // "checked" = seen — flips once the backend confirms the
-                // other person has read it (preview.seen), same as any
-                // other messenger's read receipt.
-                let statusTick = '';
-                if (preview && preview.isMine) {
-                    statusTick = preview.seen
-                        ? `<div class="chat-row-status"><span class="status-tick seen">checked</span></div>`
-                        : `<div class="chat-row-status"><span class="status-tick sent">gone</span></div>`;
+                // Subtext line: no message yet -> "No messages yet".
+                // Last message was mine -> "gone" (sent) or "checked" (seen).
+                // Last message was theirs -> just show its text.
+                let previewText;
+                if (!preview) {
+                    previewText = 'No messages yet';
+                } else if (preview.isMine) {
+                    previewText = preview.seen ? 'checked' : 'gone';
+                } else {
+                    previewText = preview.text;
                 }
 
                 container.innerHTML += `
-                    <div class="chat-row list-item" onclick="openConversation('${conv.id}', '${name.replace(/'/g, "\\'")}')">
+                    <div class="chat-row" onclick="openConversation('${conv.id}', '${name.replace(/'/g, "\\'")}')">
                         <div class="list-avatar"><i class="${iconClass}"></i></div>
                         <div class="list-content">
                             <div class="list-title">${name}</div>
                             <div class="list-desc">${previewText}</div>
                         </div>
-                        ${statusTick}
                         ${unreadBadge}
                     </div>`;
             });
@@ -3626,7 +3722,7 @@
 
         function filterChatsLocally() {
             const q = document.getElementById('chat-internal-search').value.toLowerCase();
-            document.querySelectorAll('#dynamic-chat-list .list-item').forEach(item => {
+            document.querySelectorAll('#dynamic-chat-list .chat-row').forEach(item => {
                 const title = item.querySelector('.list-title').innerText.toLowerCase();
                 item.style.display = title.includes(q) ? 'flex' : 'none';
             });
