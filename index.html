@@ -285,6 +285,22 @@
             gap: 15px;
         }
 
+        .header-clips-btn {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-standard);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-clips-btn:hover {
+            color: var(--accent-cyan);
+            transform: scale(1.05);
+        }
+
         .hamburger-menu-window {
             position: absolute;
             top: calc(100% + 8px);
@@ -631,10 +647,10 @@
         .screen-title { font-size: 1.2rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 10px; }
 
         /* ==========================================================================
-           ROLLS VIEWER — full-screen slide-through view opened by swiping left
+           CLIPS VIEWER — full-screen slide-through view opened by swiping left
            on the feed. Slides between posts (no vertical scroll inside a slide).
            ========================================================================== */
-        .rolls-overlay {
+        .clips-overlay {
             position: absolute;
             inset: 0;
             background: #000;
@@ -644,9 +660,9 @@
             transform: translateX(100%);
             transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .rolls-overlay.open { transform: translateX(0); }
+        .clips-overlay.open { transform: translateX(0); }
 
-        .rolls-header {
+        .clips-header {
             display: flex;
             align-items: center;
             padding: 14px 16px;
@@ -657,7 +673,7 @@
             left: 0;
             right: 0;
         }
-        .rolls-back {
+        .clips-back {
             font-size: 1.2rem;
             cursor: pointer;
             width: 34px;
@@ -670,7 +686,7 @@
             backdrop-filter: blur(6px);
         }
 
-        .rolls-track {
+        .clips-track {
             flex: 1;
             display: flex;
             height: 100%;
@@ -678,7 +694,7 @@
             touch-action: pan-y;
         }
 
-        .rolls-slide {
+        .clips-slide {
             flex: 0 0 100%;
             width: 100%;
             height: 100%;
@@ -688,7 +704,7 @@
             overflow: hidden;
         }
 
-        .rolls-slide img {
+        .clips-slide img {
             position: absolute;
             inset: 0;
             width: 100%;
@@ -696,13 +712,13 @@
             object-fit: cover;
         }
 
-        .rolls-slide.text-slide {
+        .clips-slide.text-slide {
             align-items: center;
             justify-content: center;
             background: linear-gradient(160deg, #0a0a14, #14142a);
             padding: 30px;
         }
-        .rolls-slide.text-slide .rolls-caption-big {
+        .clips-slide.text-slide .clips-caption-big {
             font-size: 1.3rem;
             font-weight: 600;
             text-align: center;
@@ -710,14 +726,14 @@
             line-height: 1.4;
         }
 
-        .rolls-slide-scrim {
+        .clips-slide-scrim {
             position: absolute;
             inset: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 40%, transparent 65%);
             pointer-events: none;
         }
 
-        .rolls-watermark {
+        .clips-watermark {
             position: absolute;
             top: 16px;
             right: 18px;
@@ -731,32 +747,51 @@
             pointer-events: none;
         }
 
-        .rolls-slide-info {
+        .clips-delete-btn {
+            position: absolute;
+            top: 16px;
+            left: 18px;
+            z-index: 3;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(6px);
+            color: #fff;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .clips-delete-btn:hover { background: var(--danger-red); }
+
+        .clips-slide-info {
             position: relative;
             z-index: 1;
             width: 100%;
             padding: 0 18px 26px 18px;
             color: #fff;
         }
-        .rolls-slide-user {
+        .clips-slide-user {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 8px;
             font-weight: 600;
         }
-        .rolls-slide-avatar {
+        .clips-slide-avatar {
             width: 32px; height: 32px; border-radius: 50%;
             background: var(--glass-highlight);
             display: flex; align-items: center; justify-content: center;
             font-size: 0.9rem; overflow: hidden; flex-shrink: 0;
         }
-        .rolls-slide-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .rolls-slide-caption { font-size: 0.85rem; opacity: 0.92; line-height: 1.4; }
-        .rolls-slide-stats { display: flex; gap: 18px; margin-top: 12px; font-size: 0.8rem; opacity: 0.9; }
-        .rolls-slide-stats span { display: flex; align-items: center; gap: 5px; }
+        .clips-slide-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .clips-slide-caption { font-size: 0.85rem; opacity: 0.92; line-height: 1.4; }
+        .clips-slide-stats { display: flex; gap: 18px; margin-top: 12px; font-size: 0.8rem; opacity: 0.9; }
+        .clips-slide-stats span { display: flex; align-items: center; gap: 5px; }
 
-        .rolls-empty {
+        .clips-empty {
             color: rgba(255,255,255,0.6);
             text-align: center;
             width: 100%;
@@ -766,10 +801,10 @@
             align-items: center;
             gap: 10px;
         }
-        .rolls-empty i { font-size: 2.2rem; }
+        .clips-empty i { font-size: 2.2rem; }
 
         /* Nudge shown briefly on the feed to teach the swipe-left gesture */
-        .rolls-swipe-hint {
+        .clips-swipe-hint {
             position: absolute;
             right: 14px;
             top: 50%;
@@ -778,9 +813,9 @@
             font-size: 1.1rem;
             opacity: 0.5;
             pointer-events: none;
-            animation: rolls-hint-pulse 2.4s ease-in-out infinite;
+            animation: clips-hint-pulse 2.4s ease-in-out infinite;
         }
-        @keyframes rolls-hint-pulse {
+        @keyframes clips-hint-pulse {
             0%, 100% { opacity: 0.25; transform: translateY(-50%) translateX(0); }
             50%      { opacity: 0.6; transform: translateY(-50%) translateX(-4px); }
         }
@@ -1858,6 +1893,130 @@
             line-height: 1.5;
             white-space: pre-wrap;
         }
+
+        /* ── ONE-TIME GESTURE NAV NOTICE ── */
+        .gnav-notice-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(139, 107, 255, 0.15);
+            color: var(--accent-violet);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin: 4px auto 14px;
+        }
+
+        .gnav-notice-title {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .gnav-notice-body {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+
+        .gnav-notice-btn {
+            background: var(--accent-violet);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 11px 28px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .gnav-notice-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* ── FEATURES & TUTORIAL ── */
+        .tutorial-intro {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            padding: 2px 2px 16px;
+        }
+
+        .tutorial-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 10px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: var(--transition-standard);
+            border: 1px solid transparent;
+        }
+
+        .tutorial-item:hover,
+        .tutorial-item:active {
+            background: var(--glass-bg);
+            border-color: var(--glass-border);
+        }
+
+        .tutorial-item-icon {
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            color: var(--accent-violet);
+        }
+
+        .tutorial-item-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tutorial-item-title {
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .tutorial-item-desc {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .tutorial-item-location {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        .tutorial-section-label {
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin: 18px 6px 6px;
+        }
+
+        .tutorial-section-label:first-of-type {
+            margin-top: 2px;
+        }
     </style>
 </head>
 
@@ -1869,6 +2028,17 @@
             <button class="ennex-popup-close" id="ennexPopupClose"><i class="fas fa-times"></i></button>
             <img class="ennex-popup-image" id="ennexPopupImage" style="display:none;">
             <div class="ennex-popup-message" id="ennexPopupMessage"></div>
+        </div>
+    </div>
+
+    <!-- ONE-TIME NOTICE: gesture navigation is available in Settings -->
+    <div class="ennex-popup-overlay" id="gnavNoticeOverlay">
+        <div class="ennex-popup-card" id="gnavNoticeCard" style="max-width: 340px;">
+            <button class="ennex-popup-close" id="gnavNoticeClose"><i class="fas fa-times"></i></button>
+            <div class="gnav-notice-icon"><i class="fas fa-hand-pointer"></i></div>
+            <div class="gnav-notice-title">Prefer swipe gestures?</div>
+            <div class="gnav-notice-body">The nav bar is shown by default. You can switch to gesture navigation anytime in Settings.</div>
+            <button class="gnav-notice-btn" id="gnavNoticeGotIt">Got it</button>
         </div>
     </div>
 
@@ -1965,19 +2135,21 @@
                 </div>
             </div>
             <div class="brand">Entranex</div>
+            <i class="fas fa-photo-film header-clips-btn" id="header-clips-btn" onclick="openClips()" title="See Clips"></i>
         </header>
 
         <main id="feed-screen" class="screen">
             <div id="dynamic-feed"></div>
         </main>
 
-        <!-- Rolls-style viewer: swipe left on the feed to open. Slides (not scrolls)
-             horizontally between posts using the same feedPosts data. -->
-        <div class="rolls-overlay" id="rolls-overlay">
-            <div class="rolls-header">
-                <i class="fas fa-chevron-left rolls-back" onclick="closeRolls()"></i>
+        <!-- Clips-style viewer: swipe left on the feed to open, or tap the
+             "See Clips" icon in the header. Slides (not scrolls) horizontally
+             between posts using the same feedPosts data. -->
+        <div class="clips-overlay" id="clips-overlay">
+            <div class="clips-header">
+                <i class="fas fa-chevron-left clips-back" onclick="closeClips()"></i>
             </div>
-            <div class="rolls-track" id="rolls-track"></div>
+            <div class="clips-track" id="clips-track"></div>
         </div>
 
         <!-- Feed filter: small edge tab, swipe right (or tap) to open the filter drawer -->
@@ -2026,6 +2198,9 @@
             </div>
             <div class="feed-filter-option" onclick="closeFeedFilterDrawer(); openSettingsWindow();">
                 <i class="fas fa-sliders-h"></i> Settings
+            </div>
+            <div class="feed-filter-option" onclick="closeFeedFilterDrawer(); openTutorialWindow();">
+                <i class="fas fa-graduation-cap"></i> Features and Tutorial
             </div>
         </div>
 
@@ -2285,7 +2460,7 @@
                         </div>
                         <div class="settings-row-accessory">
                             <label class="theme-switch">
-                                <input type="checkbox" id="gesture-nav-toggle" checked onchange="toggleGestureNav(this.checked)">
+                                <input type="checkbox" id="gesture-nav-toggle" onchange="toggleGestureNav(this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -2532,6 +2707,168 @@
                 </div>
                 <div class="btn-flex">
                     <button class="btn btn-cancel" onclick="closeModal('comments-modal')">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features & Tutorial: explains every feature, where it lives, and jumps to it on tap -->
+        <div class="post-drawer-overlay" id="tutorial-modal">
+            <div class="post-drawer-header">
+                <div class="post-drawer-close" onclick="closeModal('tutorial-modal')"><i class="fas fa-arrow-left"></i></div>
+                <h3>Features and Tutorial</h3>
+                <div style="width: 32px;"></div>
+            </div>
+            <div class="post-drawer-body" style="padding: 16px 14px;">
+                <div class="tutorial-intro">Tap any feature below to jump straight to it.</div>
+
+                <div class="tutorial-section-label">Get Around</div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('feed')">
+                    <div class="tutorial-item-icon"><i class="fas fa-window-maximize"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Feed</div>
+                        <div class="tutorial-item-desc">Your home screen — posts from people you follow.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, center icon</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('profile')">
+                    <div class="tutorial-item-icon"><i class="fas fa-user-circle"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Profile</div>
+                        <div class="tutorial-item-desc">Your posts, photo, and bio.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, far left icon</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('chat')">
+                    <div class="tutorial-item-icon"><i class="fas fa-comment-dots"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Messages</div>
+                        <div class="tutorial-item-desc">Direct messages and conversations.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, second icon</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('notif')">
+                    <div class="tutorial-item-icon"><i class="fas fa-bell"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Notifications</div>
+                        <div class="tutorial-item-desc">Likes, comments, follows, and mentions.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, second from right</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('search')">
+                    <div class="tutorial-item-icon"><i class="fas fa-search"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Find Friends</div>
+                        <div class="tutorial-item-desc">Search for people to follow.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, far right icon</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('weather')">
+                    <div class="tutorial-item-icon"><i class="fas fa-sun"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Weather</div>
+                        <div class="tutorial-item-desc">Today's forecast plus the hourly and 7-day outlook.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Weather chip, top of the Feed</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('feed-filter')">
+                    <div class="tutorial-item-icon"><i class="fas fa-sliders-h"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">This Menu (App Drawer)</div>
+                        <div class="tutorial-item-desc">Feed filters plus every Quick App and app setting, in one place.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Swipe right, or tap the tab on the left edge</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('nav-drawer')">
+                    <div class="tutorial-item-icon"><i class="fas fa-grip-lines"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Gesture Navigation</div>
+                        <div class="tutorial-item-desc">Hide the bottom nav bar and reveal it with a swipe-up. Toggle it any time.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Settings → Gesture Navigation</div>
+                    </div>
+                </div>
+
+                <div class="tutorial-section-label">Quick Apps</div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('write-post')">
+                    <div class="tutorial-item-icon"><i class="fas fa-edit"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Write a Post</div>
+                        <div class="tutorial-item-desc">Share text, photos, or a drawing to your feed.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('take-photo')">
+                    <div class="tutorial-item-icon"><i class="fas fa-camera"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Take Photo</div>
+                        <div class="tutorial-item-desc">Capture a photo to post right away.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('drawing')">
+                    <div class="tutorial-item-icon"><i class="fas fa-pen-nib"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Drawing</div>
+                        <div class="tutorial-item-desc">A simple sketch pad you can save as a PNG.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('notes')">
+                    <div class="tutorial-item-icon"><i class="fas fa-note-sticky"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Notes</div>
+                        <div class="tutorial-item-desc">Quick notes saved locally on this device.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('browser')">
+                    <div class="tutorial-item-icon"><i class="fas fa-globe"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Browser</div>
+                        <div class="tutorial-item-desc">A built-in mini web browser.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('games')">
+                    <div class="tutorial-item-icon"><i class="fas fa-gamepad"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Games</div>
+                        <div class="tutorial-item-desc">A small idle game to pass the time.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('alien-chat')">
+                    <div class="tutorial-item-icon"><i class="fas fa-user-astronaut"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Alien Chat</div>
+                        <div class="tutorial-item-desc">Chat with a playful AI character.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('account-center')">
+                    <div class="tutorial-item-icon"><i class="fas fa-id-badge"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Account Center</div>
+                        <div class="tutorial-item-desc">Edit your profile photo, name, and bio.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
+                    </div>
+                </div>
+
+                <div class="tutorial-section-label">App</div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('theme')">
+                    <div class="tutorial-item-icon"><i class="fas fa-palette"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">App Theme</div>
+                        <div class="tutorial-item-desc">Switch between Dark, Light, Aurora, Matrix, and more.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → App</div>
+                    </div>
+                </div>
+                <div class="tutorial-item" onclick="goToTutorialFeature('settings')">
+                    <div class="tutorial-item-icon"><i class="fas fa-sliders-h"></i></div>
+                    <div class="tutorial-item-body">
+                        <div class="tutorial-item-title">Settings</div>
+                        <div class="tutorial-item-desc">Gesture navigation, swipe-up menu timing, and more.</div>
+                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → App</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2972,9 +3309,46 @@
 
             changeTheme(savedTheme || 'dark');
             applyGestureNavSetting();
+            maybeShowGestureNavNotice();
 
             playIntroThenContinue();
         };
+
+        // ─── ONE-TIME NOTICE: gesture nav available in Settings ────────────────
+        function maybeShowGestureNavNotice() {
+            const overlay = document.getElementById('gnavNoticeOverlay');
+            const closeBtn = document.getElementById('gnavNoticeClose');
+            const gotItBtn = document.getElementById('gnavNoticeGotIt');
+            if (!overlay) return;
+
+            let alreadySeen = false;
+            try {
+                alreadySeen = localStorage.getItem('entranexGestureNavNoticeSeen') === '1';
+            } catch (storageErr) {
+                console.error('localStorage unavailable:', storageErr);
+            }
+            if (alreadySeen) return;
+
+            function dismiss() {
+                overlay.classList.remove('show');
+                try {
+                    localStorage.setItem('entranexGestureNavNoticeSeen', '1');
+                } catch (storageErr) {
+                    console.error('localStorage unavailable:', storageErr);
+                }
+            }
+
+            closeBtn.addEventListener('click', dismiss);
+            gotItBtn.addEventListener('click', dismiss);
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay) dismiss();
+            });
+
+            // Show after the intro splash so it doesn't collide with it.
+            setTimeout(function () {
+                overlay.classList.add('show');
+            }, 3200);
+        }
 
         function playIntroThenContinue() {
             const intro = document.getElementById('intro-screen');
@@ -3359,7 +3733,7 @@
         }
 
         function applyGestureNavSetting() {
-            const enabled = localStorage.getItem('entranexGestureNav') !== 'off';
+            const enabled = localStorage.getItem('entranexGestureNav') === 'on';
             document.body.classList.toggle('nav-always-visible', !enabled);
             clearTimeout(drawerHideTimer);
         }
@@ -3460,7 +3834,7 @@
             nameEl.innerText = userData.name;
             handleEl.innerText = `@${currentUserHandle}`;
             const gestureToggle = document.getElementById('gesture-nav-toggle');
-            if (gestureToggle) gestureToggle.checked = localStorage.getItem('entranexGestureNav') !== 'off';
+            if (gestureToggle) gestureToggle.checked = localStorage.getItem('entranexGestureNav') === 'on';
         }
 
         function triggerAction(actionName) {
@@ -3474,6 +3848,61 @@
         // Updated Settings routing to open the full screen
         function openSettingsWindow() {
             switchTab('settings');
+        }
+
+        function openTutorialWindow() {
+            document.getElementById('tutorial-modal').classList.add('active');
+        }
+
+        // Closes the tutorial and jumps straight to the tapped feature.
+        function goToTutorialFeature(feature) {
+            closeModal('tutorial-modal');
+            switch (feature) {
+                case 'feed':
+                case 'profile':
+                case 'chat':
+                case 'notif':
+                case 'search':
+                case 'weather':
+                case 'settings':
+                    switchTab(feature);
+                    break;
+                case 'feed-filter':
+                    openFeedFilterDrawer();
+                    break;
+                case 'nav-drawer':
+                    switchTab('settings');
+                    break;
+                case 'write-post':
+                    triggerAction('write-post');
+                    break;
+                case 'take-photo':
+                    triggerAction('take-photo');
+                    break;
+                case 'drawing':
+                    openDrawingPad();
+                    break;
+                case 'notes':
+                    openNotesPad();
+                    break;
+                case 'browser':
+                    openMiniBrowser();
+                    break;
+                case 'games':
+                    openIdleGame();
+                    break;
+                case 'alien-chat':
+                    startAlienChat();
+                    break;
+                case 'account-center':
+                    openProfileEdit();
+                    break;
+                case 'theme':
+                    openThemePicker();
+                    break;
+                default:
+                    break;
+            }
         }
 
         function openThemePicker() {
@@ -4785,23 +5214,23 @@
             });
         }
 
-        // ─── ROLLS VIEWER ───────────────────────────────────────────────────
+        // ─── CLIPS VIEWER ───────────────────────────────────────────────────
         // Swiping left anywhere on the feed screen opens a full-screen,
         // slide-through viewer built from the same feedPosts data. It slides
         // between posts (transform-based) rather than scrolling.
-        const rollsOverlay = document.getElementById('rolls-overlay');
-        const rollsTrack = document.getElementById('rolls-track');
-        let rollsIndex = 0;
-        let rollsSlideCount = 0;
+        const clipsOverlay = document.getElementById('clips-overlay');
+        const clipsTrack = document.getElementById('clips-track');
+        let clipsIndex = 0;
+        let clipsSlideCount = 0;
 
-        function buildRollsSlides() {
+        function buildClipsSlides() {
             const usable = feedPosts.filter(p => p.image || p.isTextOnly);
-            rollsSlideCount = usable.length;
+            clipsSlideCount = usable.length;
 
             if (usable.length === 0) {
-                rollsTrack.innerHTML = `
-                    <div class="rolls-slide">
-                        <div class="rolls-empty">
+                clipsTrack.innerHTML = `
+                    <div class="clips-slide">
+                        <div class="clips-empty">
                             <i class="fas fa-photo-film"></i>
                             <div>No posts to slide through yet</div>
                         </div>
@@ -4809,19 +5238,24 @@
                 return;
             }
 
-            rollsTrack.innerHTML = usable.map(post => {
+            clipsTrack.innerHTML = usable.map(post => {
                 const avatarHTML = post.avatar ? `<img src="${post.avatar}">` : `<i class="fas fa-user"></i>`;
+                const isMine = post.username === currentUserHandle;
+                const deleteHTML = isMine
+                    ? `<i class="fas fa-trash clips-delete-btn" onclick="event.stopPropagation(); confirmDeleteClip(${post.id})" title="Delete clip"></i>`
+                    : '';
                 if (post.isTextOnly) {
                     return `
-                        <div class="rolls-slide text-slide">
-                            <div class="rolls-watermark">Rolls</div>
-                            <div class="rolls-caption-big">${escapeHtml(post.text)}</div>
-                            <div class="rolls-slide-info" style="position:absolute; bottom:0;">
-                                <div class="rolls-slide-user">
-                                    <div class="rolls-slide-avatar">${avatarHTML}</div>
+                        <div class="clips-slide text-slide">
+                            <div class="clips-watermark">Clips</div>
+                            ${deleteHTML}
+                            <div class="clips-caption-big">${escapeHtml(post.text)}</div>
+                            <div class="clips-slide-info" style="position:absolute; bottom:0;">
+                                <div class="clips-slide-user">
+                                    <div class="clips-slide-avatar">${avatarHTML}</div>
                                     <span>${escapeHtml(post.name)}</span>
                                 </div>
-                                <div class="rolls-slide-stats">
+                                <div class="clips-slide-stats">
                                     <span><i class="${post.likedByMe ? 'fas' : 'far'} fa-heart"></i> ${post.likeCount ?? 0}</span>
                                     <span><i class="far fa-comment"></i> ${post.commentCount ?? 0}</span>
                                 </div>
@@ -4829,17 +5263,18 @@
                         </div>`;
                 }
                 return `
-                    <div class="rolls-slide">
+                    <div class="clips-slide">
                         <img src="${post.image}" alt="Post photo" loading="lazy">
-                        <div class="rolls-slide-scrim"></div>
-                        <div class="rolls-watermark">Rolls</div>
-                        <div class="rolls-slide-info">
-                            <div class="rolls-slide-user">
-                                <div class="rolls-slide-avatar">${avatarHTML}</div>
+                        <div class="clips-slide-scrim"></div>
+                        <div class="clips-watermark">Clips</div>
+                        ${deleteHTML}
+                        <div class="clips-slide-info">
+                            <div class="clips-slide-user">
+                                <div class="clips-slide-avatar">${avatarHTML}</div>
                                 <span>${escapeHtml(post.name)}</span>
                             </div>
-                            ${post.text ? `<div class="rolls-slide-caption">${escapeHtml(post.text)}</div>` : ''}
-                            <div class="rolls-slide-stats">
+                            ${post.text ? `<div class="clips-slide-caption">${escapeHtml(post.text)}</div>` : ''}
+                            <div class="clips-slide-stats">
                                 <span><i class="${post.likedByMe ? 'fas' : 'far'} fa-heart"></i> ${post.likeCount ?? 0}</span>
                                 <span><i class="far fa-comment"></i> ${post.commentCount ?? 0}</span>
                             </div>
@@ -4848,21 +5283,46 @@
             }).join('');
         }
 
-        function goToRollsSlide(index) {
-            if (rollsSlideCount === 0) return;
-            rollsIndex = Math.max(0, Math.min(index, rollsSlideCount - 1));
-            rollsTrack.style.transform = `translateX(-${rollsIndex * 100}%)`;
+        // Deletes a post from within the Clips viewer, then rebuilds the
+        // slide list in place (closing the viewer if that was the last clip).
+        async function confirmDeleteClip(postId) {
+            if (!confirm("Delete this clip? This can't be undone.")) return;
+            try {
+                await postsDelete(`/posts/${postId}`);
+                feedPosts = feedPosts.filter(p => p.id !== postId);
+                myPosts = myPosts.filter(p => p.id !== postId);
+                renderFeed();
+                if (typeof renderProfileGalleryGrid === 'function') renderProfileGalleryGrid();
+                if (clipsSlideCount <= 1) {
+                    closeClips();
+                } else {
+                    const keepIndex = Math.min(clipsIndex, clipsSlideCount - 2);
+                    buildClipsSlides();
+                    clipsTrack.style.transition = 'none';
+                    goToClipsSlide(keepIndex);
+                    void clipsTrack.offsetHeight;
+                    clipsTrack.style.transition = '';
+                }
+            } catch (e) {
+                alert("Couldn't delete clip: " + (e.message || "the posts service may be unreachable."));
+            }
         }
 
-        function openRolls() {
-            buildRollsSlides();
-            rollsIndex = 0;
-            rollsTrack.style.transform = 'translateX(0)';
-            rollsOverlay.classList.add('open');
+        function goToClipsSlide(index) {
+            if (clipsSlideCount === 0) return;
+            clipsIndex = Math.max(0, Math.min(index, clipsSlideCount - 1));
+            clipsTrack.style.transform = `translateX(-${clipsIndex * 100}%)`;
         }
 
-        function closeRolls() {
-            rollsOverlay.classList.remove('open');
+        function openClips() {
+            buildClipsSlides();
+            clipsIndex = 0;
+            clipsTrack.style.transform = 'translateX(0)';
+            clipsOverlay.classList.add('open');
+        }
+
+        function closeClips() {
+            clipsOverlay.classList.remove('open');
         }
 
         // ─── HEADER HIDE-ON-SCROLL ──────────────────────────────────────────────
@@ -4926,9 +5386,9 @@
         // preventDefault() once horizontal intent is detected — otherwise the
         // browser's native vertical scroll fights our transform updates and
         // the drag feels stuttery / stuck.
-        (function setupFeedSwipeToRolls() {
+        (function setupFeedSwipeToClips() {
             const feedScreen = document.getElementById('feed-screen');
-            if (!feedScreen || !rollsOverlay) return;
+            if (!feedScreen || !clipsOverlay) return;
 
             const OPEN_COMMIT_RATIO = 0.22; // fraction of screen width to commit to opening
             const DIRECTION_LOCK_PX = 8;    // px of movement before we decide gesture direction
@@ -4962,16 +5422,16 @@
                         horizontal = Math.abs(dx) > Math.abs(dy) * 1.2 && dx < 0;
                         if (horizontal) {
                             dragging = true;
-                            buildRollsSlides();
-                            rollsIndex = 0;
-                            rollsTrack.style.transition = 'none';
-                            rollsTrack.style.transform = 'translateX(0)';
-                            rollsOverlay.style.transition = 'none';
-                            rollsOverlay.classList.add('open');
-                            rollsOverlay.style.transform = 'translateX(100%)';
+                            buildClipsSlides();
+                            clipsIndex = 0;
+                            clipsTrack.style.transition = 'none';
+                            clipsTrack.style.transform = 'translateX(0)';
+                            clipsOverlay.style.transition = 'none';
+                            clipsOverlay.classList.add('open');
+                            clipsOverlay.style.transform = 'translateX(100%)';
                             // Force layout so the browser registers the starting
                             // position before we start animating it on the next move.
-                            void rollsOverlay.offsetHeight;
+                            void clipsOverlay.offsetHeight;
                         }
                     }
                 }
@@ -4980,7 +5440,7 @@
                     // We own this gesture now — stop the feed from scrolling.
                     e.preventDefault();
                     const progress = Math.min(1, Math.max(0, -dx / screenW));
-                    rollsOverlay.style.transform = `translateX(${(1 - progress) * 100}%)`;
+                    clipsOverlay.style.transform = `translateX(${(1 - progress) * 100}%)`;
                 }
             }, { passive: false });
 
@@ -4994,10 +5454,10 @@
                 const progress = Math.min(1, Math.max(0, -dx / screenW));
                 const commit = progress >= OPEN_COMMIT_RATIO;
 
-                rollsOverlay.style.transition = 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
-                rollsOverlay.style.transform = commit ? 'translateX(0)' : 'translateX(100%)';
+                clipsOverlay.style.transition = 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
+                clipsOverlay.style.transform = commit ? 'translateX(0)' : 'translateX(100%)';
 
-                const overlayEl = rollsOverlay;
+                const overlayEl = clipsOverlay;
                 const onEnd = function () {
                     overlayEl.removeEventListener('transitionend', onEnd);
                     overlayEl.style.transition = '';
@@ -5016,51 +5476,51 @@
 
             feedScreen.addEventListener('touchcancel', function () {
                 if (dragging && horizontal) {
-                    rollsOverlay.style.transition = '';
-                    rollsOverlay.style.transform = '';
-                    rollsOverlay.classList.remove('open');
+                    clipsOverlay.style.transition = '';
+                    clipsOverlay.style.transform = '';
+                    clipsOverlay.classList.remove('open');
                 }
                 startX = null; startY = null;
                 dragging = false; decided = false; horizontal = false;
             }, { passive: true });
         })();
 
-        // Swipe left/right inside the rolls track to move between slides,
+        // Swipe left/right inside the clips track to move between slides,
         // and swipe down (or tap back) to close.
-        (function setupRollsGestures() {
-            if (!rollsTrack) return;
+        (function setupClipsGestures() {
+            if (!clipsTrack) return;
             let sx = null, sy = null, dragging = false;
 
-            rollsTrack.addEventListener('touchstart', function (e) {
+            clipsTrack.addEventListener('touchstart', function (e) {
                 sx = e.touches[0].clientX;
                 sy = e.touches[0].clientY;
                 dragging = true;
-                rollsTrack.style.transition = 'none';
+                clipsTrack.style.transition = 'none';
             }, { passive: true });
 
-            rollsTrack.addEventListener('touchmove', function (e) {
+            clipsTrack.addEventListener('touchmove', function (e) {
                 if (!dragging || sx === null) return;
                 const dx = e.touches[0].clientX - sx;
-                rollsTrack.style.transform = `translateX(calc(-${rollsIndex * 100}% + ${dx}px))`;
+                clipsTrack.style.transform = `translateX(calc(-${clipsIndex * 100}% + ${dx}px))`;
             }, { passive: true });
 
-            rollsTrack.addEventListener('touchend', function (e) {
+            clipsTrack.addEventListener('touchend', function (e) {
                 if (sx === null) return;
-                rollsTrack.style.transition = '';
+                clipsTrack.style.transition = '';
                 const endX = e.changedTouches[0].clientX;
                 const endY = e.changedTouches[0].clientY;
                 const dx = endX - sx;
                 const dy = endY - sy;
 
                 if (Math.abs(dy) > 90 && Math.abs(dy) > Math.abs(dx)) {
-                    // swipe down (or up) closes the rolls view
-                    closeRolls();
+                    // swipe down (or up) closes the clips view
+                    closeClips();
                 } else if (dx < -50) {
-                    goToRollsSlide(rollsIndex + 1);
+                    goToClipsSlide(clipsIndex + 1);
                 } else if (dx > 50) {
-                    goToRollsSlide(rollsIndex - 1);
+                    goToClipsSlide(clipsIndex - 1);
                 } else {
-                    goToRollsSlide(rollsIndex);
+                    goToClipsSlide(clipsIndex);
                 }
                 sx = null;
                 sy = null;
