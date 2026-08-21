@@ -1495,7 +1495,24 @@
         .msg-wrapper { display: flex; flex-direction: column; max-width: 80%; }
         .msg-wrapper.mine { align-self: flex-end; align-items: flex-end; }
         .msg-wrapper.theirs { align-self: flex-start; align-items: flex-start; }
-        .msg-bubble { padding: 10px 15px; border-radius: 15px; font-size: 0.95rem; font-weight: 500; word-break: break-word; cursor: pointer; }
+        .msg-bubble-row { display: flex; align-items: center; gap: 4px; max-width: 100%; }
+        .msg-wrapper.mine .msg-bubble-row { flex-direction: row; }
+        .msg-wrapper.theirs .msg-bubble-row { flex-direction: row-reverse; }
+        .msg-dots-btn {
+            flex-shrink: 0;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        .msg-dots-btn:hover { opacity: 1; background: var(--glass-bg); }
+        .msg-bubble { padding: 10px 15px; border-radius: 15px; font-size: 0.95rem; font-weight: 500; word-break: break-word; cursor: pointer; min-width: 0; }
         .msg-wrapper.mine .msg-bubble { background: var(--accent-orange); color: #000; border-radius: 15px 15px 0 15px; }
         .msg-wrapper.theirs .msg-bubble { background: var(--glass-bg); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 15px 15px 15px 0; }
         .msg-bubble.deleted { opacity: 0.6; font-style: italic; cursor: default; }
@@ -1893,130 +1910,6 @@
             line-height: 1.5;
             white-space: pre-wrap;
         }
-
-        /* ── ONE-TIME GESTURE NAV NOTICE ── */
-        .gnav-notice-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: rgba(139, 107, 255, 0.15);
-            color: var(--accent-violet);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            margin: 4px auto 14px;
-        }
-
-        .gnav-notice-title {
-            color: var(--text-primary);
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .gnav-notice-body {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 18px;
-        }
-
-        .gnav-notice-btn {
-            background: var(--accent-violet);
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            padding: 11px 28px;
-            font-size: 0.92rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-standard);
-        }
-
-        .gnav-notice-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* ── FEATURES & TUTORIAL ── */
-        .tutorial-intro {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            line-height: 1.5;
-            padding: 2px 2px 16px;
-        }
-
-        .tutorial-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 13px 10px;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: var(--transition-standard);
-            border: 1px solid transparent;
-        }
-
-        .tutorial-item:hover,
-        .tutorial-item:active {
-            background: var(--glass-bg);
-            border-color: var(--glass-border);
-        }
-
-        .tutorial-item-icon {
-            flex-shrink: 0;
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.05rem;
-            color: var(--accent-violet);
-        }
-
-        .tutorial-item-body {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .tutorial-item-title {
-            color: var(--text-primary);
-            font-size: 0.92rem;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .tutorial-item-desc {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            line-height: 1.4;
-            margin-bottom: 4px;
-        }
-
-        .tutorial-item-location {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.72rem;
-            color: var(--accent-cyan);
-            font-weight: 500;
-        }
-
-        .tutorial-section-label {
-            color: var(--text-secondary);
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin: 18px 6px 6px;
-        }
-
-        .tutorial-section-label:first-of-type {
-            margin-top: 2px;
-        }
     </style>
 </head>
 
@@ -2028,17 +1921,6 @@
             <button class="ennex-popup-close" id="ennexPopupClose"><i class="fas fa-times"></i></button>
             <img class="ennex-popup-image" id="ennexPopupImage" style="display:none;">
             <div class="ennex-popup-message" id="ennexPopupMessage"></div>
-        </div>
-    </div>
-
-    <!-- ONE-TIME NOTICE: gesture navigation is available in Settings -->
-    <div class="ennex-popup-overlay" id="gnavNoticeOverlay">
-        <div class="ennex-popup-card" id="gnavNoticeCard" style="max-width: 340px;">
-            <button class="ennex-popup-close" id="gnavNoticeClose"><i class="fas fa-times"></i></button>
-            <div class="gnav-notice-icon"><i class="fas fa-hand-pointer"></i></div>
-            <div class="gnav-notice-title">Prefer swipe gestures?</div>
-            <div class="gnav-notice-body">The nav bar is shown by default. You can switch to gesture navigation anytime in Settings.</div>
-            <button class="gnav-notice-btn" id="gnavNoticeGotIt">Got it</button>
         </div>
     </div>
 
@@ -2199,9 +2081,6 @@
             <div class="feed-filter-option" onclick="closeFeedFilterDrawer(); openSettingsWindow();">
                 <i class="fas fa-sliders-h"></i> Settings
             </div>
-            <div class="feed-filter-option" onclick="closeFeedFilterDrawer(); openTutorialWindow();">
-                <i class="fas fa-graduation-cap"></i> Features and Tutorial
-            </div>
         </div>
 
         <main id="chat-screen" class="screen hidden">
@@ -2254,6 +2133,7 @@
         <div class="modal-overlay" id="message-action-sheet" onclick="if(event.target===this) closeMessageActionSheet()">
             <div class="action-sheet-content">
                 <div class="reaction-picker-row" id="reaction-picker-row"></div>
+                <button class="action-btn" onclick="confirmDeleteMessageForMe()"><i class="fas fa-trash"></i> Delete for Me</button>
                 <button class="action-btn" id="message-delete-btn" onclick="confirmDeleteMessage()"><i class="fas fa-trash" style="color:var(--danger-red);"></i> Delete for Everyone</button>
                 <button class="action-btn" onclick="closeMessageActionSheet()"><i class="fas fa-times"></i> Cancel</button>
             </div>
@@ -2460,7 +2340,7 @@
                         </div>
                         <div class="settings-row-accessory">
                             <label class="theme-switch">
-                                <input type="checkbox" id="gesture-nav-toggle" onchange="toggleGestureNav(this.checked)">
+                                <input type="checkbox" id="gesture-nav-toggle" checked onchange="toggleGestureNav(this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -2707,168 +2587,6 @@
                 </div>
                 <div class="btn-flex">
                     <button class="btn btn-cancel" onclick="closeModal('comments-modal')">Close</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Features & Tutorial: explains every feature, where it lives, and jumps to it on tap -->
-        <div class="post-drawer-overlay" id="tutorial-modal">
-            <div class="post-drawer-header">
-                <div class="post-drawer-close" onclick="closeModal('tutorial-modal')"><i class="fas fa-arrow-left"></i></div>
-                <h3>Features and Tutorial</h3>
-                <div style="width: 32px;"></div>
-            </div>
-            <div class="post-drawer-body" style="padding: 16px 14px;">
-                <div class="tutorial-intro">Tap any feature below to jump straight to it.</div>
-
-                <div class="tutorial-section-label">Get Around</div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('feed')">
-                    <div class="tutorial-item-icon"><i class="fas fa-window-maximize"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Feed</div>
-                        <div class="tutorial-item-desc">Your home screen — posts from people you follow.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, center icon</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('profile')">
-                    <div class="tutorial-item-icon"><i class="fas fa-user-circle"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Profile</div>
-                        <div class="tutorial-item-desc">Your posts, photo, and bio.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, far left icon</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('chat')">
-                    <div class="tutorial-item-icon"><i class="fas fa-comment-dots"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Messages</div>
-                        <div class="tutorial-item-desc">Direct messages and conversations.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, second icon</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('notif')">
-                    <div class="tutorial-item-icon"><i class="fas fa-bell"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Notifications</div>
-                        <div class="tutorial-item-desc">Likes, comments, follows, and mentions.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, second from right</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('search')">
-                    <div class="tutorial-item-icon"><i class="fas fa-search"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Find Friends</div>
-                        <div class="tutorial-item-desc">Search for people to follow.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Bottom nav, far right icon</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('weather')">
-                    <div class="tutorial-item-icon"><i class="fas fa-sun"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Weather</div>
-                        <div class="tutorial-item-desc">Today's forecast plus the hourly and 7-day outlook.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Weather chip, top of the Feed</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('feed-filter')">
-                    <div class="tutorial-item-icon"><i class="fas fa-sliders-h"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">This Menu (App Drawer)</div>
-                        <div class="tutorial-item-desc">Feed filters plus every Quick App and app setting, in one place.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Swipe right, or tap the tab on the left edge</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('nav-drawer')">
-                    <div class="tutorial-item-icon"><i class="fas fa-grip-lines"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Gesture Navigation</div>
-                        <div class="tutorial-item-desc">Hide the bottom nav bar and reveal it with a swipe-up. Toggle it any time.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> Settings → Gesture Navigation</div>
-                    </div>
-                </div>
-
-                <div class="tutorial-section-label">Quick Apps</div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('write-post')">
-                    <div class="tutorial-item-icon"><i class="fas fa-edit"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Write a Post</div>
-                        <div class="tutorial-item-desc">Share text, photos, or a drawing to your feed.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('take-photo')">
-                    <div class="tutorial-item-icon"><i class="fas fa-camera"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Take Photo</div>
-                        <div class="tutorial-item-desc">Capture a photo to post right away.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('drawing')">
-                    <div class="tutorial-item-icon"><i class="fas fa-pen-nib"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Drawing</div>
-                        <div class="tutorial-item-desc">A simple sketch pad you can save as a PNG.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('notes')">
-                    <div class="tutorial-item-icon"><i class="fas fa-note-sticky"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Notes</div>
-                        <div class="tutorial-item-desc">Quick notes saved locally on this device.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('browser')">
-                    <div class="tutorial-item-icon"><i class="fas fa-globe"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Browser</div>
-                        <div class="tutorial-item-desc">A built-in mini web browser.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('games')">
-                    <div class="tutorial-item-icon"><i class="fas fa-gamepad"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Games</div>
-                        <div class="tutorial-item-desc">A small idle game to pass the time.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('alien-chat')">
-                    <div class="tutorial-item-icon"><i class="fas fa-user-astronaut"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Alien Chat</div>
-                        <div class="tutorial-item-desc">Chat with a playful AI character.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('account-center')">
-                    <div class="tutorial-item-icon"><i class="fas fa-id-badge"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Account Center</div>
-                        <div class="tutorial-item-desc">Edit your profile photo, name, and bio.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → Quick Apps</div>
-                    </div>
-                </div>
-
-                <div class="tutorial-section-label">App</div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('theme')">
-                    <div class="tutorial-item-icon"><i class="fas fa-palette"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">App Theme</div>
-                        <div class="tutorial-item-desc">Switch between Dark, Light, Aurora, Matrix, and more.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → App</div>
-                    </div>
-                </div>
-                <div class="tutorial-item" onclick="goToTutorialFeature('settings')">
-                    <div class="tutorial-item-icon"><i class="fas fa-sliders-h"></i></div>
-                    <div class="tutorial-item-body">
-                        <div class="tutorial-item-title">Settings</div>
-                        <div class="tutorial-item-desc">Gesture navigation, swipe-up menu timing, and more.</div>
-                        <div class="tutorial-item-location"><i class="fas fa-location-arrow"></i> App Drawer → App</div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -3309,46 +3027,9 @@
 
             changeTheme(savedTheme || 'dark');
             applyGestureNavSetting();
-            maybeShowGestureNavNotice();
 
             playIntroThenContinue();
         };
-
-        // ─── ONE-TIME NOTICE: gesture nav available in Settings ────────────────
-        function maybeShowGestureNavNotice() {
-            const overlay = document.getElementById('gnavNoticeOverlay');
-            const closeBtn = document.getElementById('gnavNoticeClose');
-            const gotItBtn = document.getElementById('gnavNoticeGotIt');
-            if (!overlay) return;
-
-            let alreadySeen = false;
-            try {
-                alreadySeen = localStorage.getItem('entranexGestureNavNoticeSeen') === '1';
-            } catch (storageErr) {
-                console.error('localStorage unavailable:', storageErr);
-            }
-            if (alreadySeen) return;
-
-            function dismiss() {
-                overlay.classList.remove('show');
-                try {
-                    localStorage.setItem('entranexGestureNavNoticeSeen', '1');
-                } catch (storageErr) {
-                    console.error('localStorage unavailable:', storageErr);
-                }
-            }
-
-            closeBtn.addEventListener('click', dismiss);
-            gotItBtn.addEventListener('click', dismiss);
-            overlay.addEventListener('click', function (e) {
-                if (e.target === overlay) dismiss();
-            });
-
-            // Show after the intro splash so it doesn't collide with it.
-            setTimeout(function () {
-                overlay.classList.add('show');
-            }, 3200);
-        }
 
         function playIntroThenContinue() {
             const intro = document.getElementById('intro-screen');
@@ -3733,7 +3414,7 @@
         }
 
         function applyGestureNavSetting() {
-            const enabled = localStorage.getItem('entranexGestureNav') === 'on';
+            const enabled = localStorage.getItem('entranexGestureNav') !== 'off';
             document.body.classList.toggle('nav-always-visible', !enabled);
             clearTimeout(drawerHideTimer);
         }
@@ -3834,7 +3515,7 @@
             nameEl.innerText = userData.name;
             handleEl.innerText = `@${currentUserHandle}`;
             const gestureToggle = document.getElementById('gesture-nav-toggle');
-            if (gestureToggle) gestureToggle.checked = localStorage.getItem('entranexGestureNav') === 'on';
+            if (gestureToggle) gestureToggle.checked = localStorage.getItem('entranexGestureNav') !== 'off';
         }
 
         function triggerAction(actionName) {
@@ -3848,61 +3529,6 @@
         // Updated Settings routing to open the full screen
         function openSettingsWindow() {
             switchTab('settings');
-        }
-
-        function openTutorialWindow() {
-            document.getElementById('tutorial-modal').classList.add('active');
-        }
-
-        // Closes the tutorial and jumps straight to the tapped feature.
-        function goToTutorialFeature(feature) {
-            closeModal('tutorial-modal');
-            switch (feature) {
-                case 'feed':
-                case 'profile':
-                case 'chat':
-                case 'notif':
-                case 'search':
-                case 'weather':
-                case 'settings':
-                    switchTab(feature);
-                    break;
-                case 'feed-filter':
-                    openFeedFilterDrawer();
-                    break;
-                case 'nav-drawer':
-                    switchTab('settings');
-                    break;
-                case 'write-post':
-                    triggerAction('write-post');
-                    break;
-                case 'take-photo':
-                    triggerAction('take-photo');
-                    break;
-                case 'drawing':
-                    openDrawingPad();
-                    break;
-                case 'notes':
-                    openNotesPad();
-                    break;
-                case 'browser':
-                    openMiniBrowser();
-                    break;
-                case 'games':
-                    openIdleGame();
-                    break;
-                case 'alien-chat':
-                    startAlienChat();
-                    break;
-                case 'account-center':
-                    openProfileEdit();
-                    break;
-                case 'theme':
-                    openThemePicker();
-                    break;
-                default:
-                    break;
-            }
         }
 
         function openThemePicker() {
@@ -4458,11 +4084,13 @@
 
         function renderMessages(messages, area) {
             area.innerHTML = '';
-            if (messages.length === 0) {
+            const hidden = getDeletedForMeSet();
+            const visible = messages.filter(m => !hidden.has(String(m.id)));
+            if (visible.length === 0) {
                 area.innerHTML = '<div style="text-align:center;color:var(--text-secondary);font-size:0.85rem;margin-top:20px;">No messages yet. Say hi!</div>';
                 return;
             }
-            messages.forEach(msg => appendMessageBubble(msg, area));
+            visible.forEach(msg => appendMessageBubble(msg, area));
             area.scrollTop = area.scrollHeight;
         }
 
@@ -4519,7 +4147,8 @@
                 bubbleHtml = `<div class="msg-bubble">${div.innerHTML}</div>`;
             }
 
-            wrapper.innerHTML = bubbleHtml + renderReactionRow(msg);
+            const dotsHtml = `<i class="fas fa-ellipsis-vertical msg-dots-btn" onclick="event.stopPropagation(); openMessageActionSheetById('${attrSafe(msg.id)}')"></i>`;
+            wrapper.innerHTML = `<div class="msg-bubble-row">${bubbleHtml}${dotsHtml}</div>` + renderReactionRow(msg);
 
             // Long-press (mobile) or right-click (desktop) opens react/delete sheet.
             let pressTimer = null;
@@ -4531,6 +4160,16 @@
             wrapper.addEventListener('contextmenu', (e) => { e.preventDefault(); openMessageActionSheet(msg, isMine); });
 
             area.appendChild(wrapper);
+        }
+
+        // Looks a message up by id from the currently open conversation and
+        // opens the action sheet for it -- used by the tappable 3-dot button
+        // so it doesn't need the whole message object inlined into HTML.
+        function openMessageActionSheetById(messageId) {
+            const msg = activeConversationMessages.find(m => String(m.id) === String(messageId));
+            if (!msg) return;
+            const isMine = msg.sender?.username === currentUserHandle;
+            openMessageActionSheet(msg, isMine);
         }
 
         function openMessageActionSheet(msg, isMine) {
@@ -4565,6 +4204,35 @@
             } catch (e) {
                 alert('Could not delete message: ' + e.message);
             }
+        }
+
+        // "Delete for me" has no server-side concept (the other person still
+        // sees it) -- it just hides the message on this device, persisted so
+        // it stays hidden across reloads. Stored per-device, keyed by id.
+        function getDeletedForMeSet() {
+            try {
+                return new Set(JSON.parse(localStorage.getItem('ennexDeletedForMe')) || []);
+            } catch (e) {
+                return new Set();
+            }
+        }
+
+        function saveDeletedForMeSet(set) {
+            try {
+                localStorage.setItem('ennexDeletedForMe', JSON.stringify([...set]));
+            } catch (e) {
+                console.error('localStorage blocked:', e);
+            }
+        }
+
+        function confirmDeleteMessageForMe() {
+            const id = activeActionMessageId;
+            closeMessageActionSheet();
+            if (!id) return;
+            const set = getDeletedForMeSet();
+            set.add(String(id));
+            saveDeletedForMeSet(set);
+            renderMessages(activeConversationMessages, document.getElementById('chat-messages-area'));
         }
 
         async function reactToMessage(messageId, emoji) {
